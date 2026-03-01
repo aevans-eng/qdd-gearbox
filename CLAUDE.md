@@ -21,7 +21,21 @@ This is a quasi-direct-drive (QDD) actuator project. We are designing a 3D-print
   - `04-detailed-design.md` — CAD strategy, assembly stack, DFM
   - `05-parts-list.md` — BOM and sourcing
   - `06-references.md` — external links and open questions
+  - `07-design-calcs.md` — links to and explains each Python calculator
+  - `08-gdt-notes.md` — GD&T decisions on critical features
+  - `09-test-plan.md` — verification and test procedures
+  - `CHANGELOG.md` — design decision log with dates
 - `src/` — future firmware and control code (C, ODrive config)
+- `calc/` — Python design calculators (run with `python <script>.py`)
+  - `gear_geometry.py` — symbolic involute gear profile generation (SymPy)
+  - `tooth_stress.py` — Lewis bending + Hertzian contact stress, iterative solver
+  - `bearing_life.py` — L10 bearing lifetime prediction (ISO 281)
+  - `thermal.py` — lumped-parameter thermal model, iterative solver
+  - `utils/` — shared constants, unit helpers, data structures
+- `ui/` — visualization and dashboard
+  - `dashboard.py` — Tkinter UI displaying calc results with matplotlib plots
+- `drawings/` — GD&T annotation notes and tolerance schemes
+- `tests/` — validation tests for calculators (pytest)
 
 ## Design Context
 

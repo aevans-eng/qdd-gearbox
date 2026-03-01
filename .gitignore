@@ -6,3 +6,28 @@
 *.exp
 *.ilk
 *.pdb
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+*.egg
+
+# Workflow System
+.context/       # Session state (personal, not for repo)
+logs/           # Daily engineering logs (commit selectively)
+tools/*.exe     # Compiled utilities (regenerate locally)
+
+# Generated output (regenerate with scripts, don't track in git)
+*.stl
+*.step
+*.tar.gz
+*.zip
+
+# Keep _versions/ snapshots tracked (override above)
+!pygeartrain/step_output_aaron/_versions/
