@@ -146,11 +146,22 @@ RING_OFFSET_DEG = 0.2
 # Ring wall thickness
 RING_WALL_MM = 10.0              # matches skeleton ring_wall_thickness
 
-# Output directory
-OUTPUT_DIR = "step_output_aaron"
+# Output directory — resolve relative to script location, not cwd
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_OUTPUT_DIR = os.path.join(SCRIPT_DIR, "step_output_aaron")
+
+# Auto-increment run number (000, 001, 002, ...)
+existing_runs = [d for d in os.listdir(BASE_OUTPUT_DIR)
+                 if os.path.isdir(os.path.join(BASE_OUTPUT_DIR, d)) and d[:3].isdigit()]
+if existing_runs:
+    next_num = max(int(d[:3]) for d in existing_runs) + 1
+else:
+    next_num = 0
+OUTPUT_DIR = os.path.join(BASE_OUTPUT_DIR, f"{next_num:03d}")
 
 print("=" * 60)
 print("STEP FILE GENERATOR - Aaron's QDD Gearbox")
+print(f"Run {next_num:03d}")
 print("=" * 60)
 
 # --- Create Geometry ---
@@ -438,7 +449,7 @@ except Exception as e:
 
 
 print("\n" + "=" * 60)
-print("GENERATION COMPLETE")
+print(f"GENERATION COMPLETE — Run {next_num:03d}")
 print(f"Output directory: {OUTPUT_DIR}/")
 print("\n--- Manufacturing (_PRINT) ---")
 print("  Individual parts, clean geometry, ready for slicer/manufacturer:")
