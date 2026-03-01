@@ -404,10 +404,12 @@ print("  Exported ring_top_PRINT.step/.stl")
 
 
 # --- Create Assembly ---
-print("\nCreating assembly preview...")
+print("\nCreating multi-body CAD part...")
 try:
     from OCP.TopoDS import TopoDS_Compound
     from OCP.BRep import BRep_Builder
+    from OCP.STEPControl import STEPControl_Writer, STEPControl_AsIs
+    from OCP.Interface import Interface_Static
 
     compound = TopoDS_Compound()
     builder = BRep_Builder()
@@ -419,12 +421,18 @@ try:
     builder.Add(compound, ring_bottom_shape)
     builder.Add(compound, ring_top_shape)
 
-    assembly_cq = cq.Workplane("XY").add(cq.Shape(compound))
-    exporters.export(assembly_cq, os.path.join(OUTPUT_DIR, "gearbox_CAD.step"))
-    print("  Exported gearbox_CAD.step (multi-body part for CATIA import)")
+    # Write STEP directly via OCC to force single-part (no assembly structure)
+    writer = STEPControl_Writer()
+    Interface_Static.SetIVal_s("write.step.assembly", 0)  # 0 = no assembly decomposition
+    writer.Transfer(compound, STEPControl_AsIs)
+    status = writer.Write(os.path.join(OUTPUT_DIR, "gearbox_CAD.step"))
+    if status == 1:  # IFSelect_RetDone
+        print("  Exported gearbox_CAD.step (multi-body part, no assembly structure)")
+    else:
+        print(f"  STEP write returned status {status}")
 
 except Exception as e:
-    print(f"  Assembly export failed: {e}")
+    print(f"  CAD export failed: {e}")
     import traceback
     traceback.print_exc()
 
