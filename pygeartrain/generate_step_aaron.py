@@ -128,6 +128,7 @@ HELIX_ANGLE_DEGREES = 30.0
 GEAR_TYPE = 'herringbone'
 CLOSE_POINT_TOLERANCE = 1e-7
 SMALL_RADIUS_TOLERANCE = 1e-9
+PLANET_0_ANGLE_DEG = 90.0        # planet_0 orbital angle (90 = +Y axis, 0 = +X axis)
 
 # Gear parameters
 R_teeth = 48
@@ -361,7 +362,7 @@ planet_offset = offset_profile_radial(planet_scaled, PROFILE_OFFSET_MM)
 
 planet_shapes = []
 for i in range(N_planets):
-    a = 2 * np.pi * i / N_planets
+    a = 2 * np.pi * i / N_planets + math.radians(PLANET_0_ANGLE_DEG)
     w = (1 - R_teeth / P_teeth) * a
 
     planet_rotated = rotate_2d(planet_offset, w)
