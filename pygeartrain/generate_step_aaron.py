@@ -11,7 +11,7 @@ Aaron's parameters from CATIA skeleton (catia-params-2026-02-20.txt):
 Note: pygeartrain uses cycloidal (epi/hypo) teeth, NOT involute.
 The gear_module=2.5mm skeleton param does not apply here.
 
-Screw holes are REMOVED — CATIA skeleton handles all fastener features.
+Screw holes are REMOVED -- CATIA skeleton handles all fastener features.
 """
 
 import numpy as np
@@ -124,8 +124,8 @@ def validate_planetary_config(R, P, S, N):
 # --- Aaron's QDD Parameters ---
 TARGET_RING_DIAMETER_MM = 75.0   # matches skeleton ring_pitch_diam
 GEAR_THICKNESS_MM = 18.6         # matches skeleton gear_height
-HELIX_ANGLE_DEGREES = 30.0
-GEAR_TYPE = 'herringbone'
+GEAR_TYPE = 'spur'               # 'spur', 'herringbone', or 'helix'
+HELIX_ANGLE_DEGREES = 30.0       # ignored when GEAR_TYPE = 'spur'
 CLOSE_POINT_TOLERANCE = 1e-7
 SMALL_RADIUS_TOLERANCE = 1e-9
 PLANET_0_ANGLE_DEG = 90.0        # planet_0 orbital angle (90 = +Y axis, 0 = +X axis)
@@ -147,9 +147,15 @@ RING_OFFSET_DEG = 0.2
 # Ring wall thickness
 RING_WALL_MM = 10.0              # matches skeleton ring_wall_thickness
 
-# Output directory — resolve relative to script location, not cwd
+# Override helix angle for spur gears
+if GEAR_TYPE == 'spur':
+    HELIX_ANGLE_DEGREES = 0.0
+
+# Output directory -- resolve relative to script location, not cwd
+# Organized by gear type: step_output_aaron/spur/000/, herringbone/001/, etc.
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-BASE_OUTPUT_DIR = os.path.join(SCRIPT_DIR, "step_output_aaron")
+BASE_OUTPUT_DIR = os.path.join(SCRIPT_DIR, "step_output_aaron", GEAR_TYPE)
+os.makedirs(BASE_OUTPUT_DIR, exist_ok=True)
 
 # Auto-increment run number (000, 001, 002, ...)
 existing_runs = [d for d in os.listdir(BASE_OUTPUT_DIR)
@@ -162,7 +168,7 @@ OUTPUT_DIR = os.path.join(BASE_OUTPUT_DIR, f"{next_num:03d}")
 
 print("=" * 60)
 print("STEP FILE GENERATOR - Aaron's QDD Gearbox")
-print(f"Run {next_num:03d}")
+print(f"Gear type: {GEAR_TYPE} | Run {next_num:03d}")
 print("=" * 60)
 
 # --- Create Geometry ---
@@ -178,7 +184,10 @@ carrier_radius = 1.0 * scale_factor
 sun_outer_r = np.max(np.linalg.norm(base_sun_profile.vertices, axis=1)) * scale_factor
 planet_outer_r = np.max(np.linalg.norm(base_planet_profile.vertices, axis=1)) * scale_factor
 ring_inner_r = np.min(np.linalg.norm(base_ring_profile.vertices, axis=1)) * scale_factor
+ring_root_r = np.max(np.linalg.norm(base_ring_profile.vertices, axis=1)) * scale_factor
 ring_outer_r = TARGET_RING_DIAMETER_MM / 2 + RING_WALL_MM
+ring_tooth_depth = ring_root_r - ring_inner_r
+ring_solid_wall = ring_outer_r - ring_root_r
 
 
 print(f"\n--- Clearance ---")
@@ -188,10 +197,10 @@ print(f"--- Geometry ---")
 print(f"Ring diameter: {TARGET_RING_DIAMETER_MM}mm, Thickness: {GEAR_THICKNESS_MM}mm")
 print(f"Ring outer diameter: {ring_outer_r * 2}mm (with {RING_WALL_MM}mm wall)")
 print(f"Ratio: {(R_teeth + S_teeth) / S_teeth:.2f}:1")
-print(f"(No screw holes — CATIA skeleton handles fasteners)")
+print(f"(No screw holes -- CATIA skeleton handles fasteners)")
 
 # Print pitch diameters for CATIA skeleton update
-# For cycloidal gears, "pitch diameter" ≈ where teeth mesh
+# For cycloidal gears, "pitch diameter" ~ where teeth mesh
 # Approximate as: carrier_radius * 2 * (S or P) / (S+P) for sun/planet
 sun_pitch_r = carrier_radius * S_teeth / (S_teeth + P_teeth) * 2
 planet_pitch_r = carrier_radius * P_teeth / (S_teeth + P_teeth) * 2
@@ -199,8 +208,11 @@ ring_pitch_r = sun_pitch_r + 2 * planet_pitch_r
 print(f"\n--- Dimensions for CATIA skeleton update ---")
 print(f"Sun outer radius:    {sun_outer_r:.3f}mm  (diameter: {sun_outer_r*2:.3f}mm)")
 print(f"Planet outer radius: {planet_outer_r:.3f}mm  (diameter: {planet_outer_r*2:.3f}mm)")
-print(f"Ring inner radius:   {ring_inner_r:.3f}mm  (diameter: {ring_inner_r*2:.3f}mm)")
-print(f"Ring outer radius:   {ring_outer_r:.3f}mm  (diameter: {ring_outer_r*2:.3f}mm)")
+print(f"Ring inner radius:   {ring_inner_r:.3f}mm  (diameter: {ring_inner_r*2:.3f}mm, tooth tips)")
+print(f"Ring root radius:    {ring_root_r:.3f}mm  (diameter: {ring_root_r*2:.3f}mm, tooth roots)")
+print(f"Ring tooth depth:    {ring_tooth_depth:.3f}mm  (tip to root)")
+print(f"Ring solid wall:     {ring_solid_wall:.3f}mm  (root to OD -- minimum solid material)")
+print(f"Ring outer radius:   {ring_outer_r:.3f}mm  (diameter: {ring_outer_r*2:.3f}mm, OD)")
 print(f"Carrier radius:      {carrier_radius:.3f}mm  (planet center distance from axis)")
 print(f"Scale factor:        {scale_factor:.6f}")
 
@@ -383,36 +395,58 @@ for i in range(N_planets):
     print(f"  Exported planet_{i}_PRINT.step/.stl")
 
 
-# --- Generate Split Ring Gear ---
-print("\nGenerating Split Ring gear...")
+# --- Generate Ring Gear ---
 ring_scaled = base_ring_profile.vertices * scale_factor
 # For zero offset, ring also gets zero (negated zero is still zero)
 ring_offset = offset_profile_radial(ring_scaled, -PROFILE_OFFSET_MM)
 ring_filtered = filter_points(ring_offset)
 
-# Bottom half: z = -z_half to 0
-print("  Creating ring_bottom...")
-ring_bottom_shape = create_ring_half(
-    ring_filtered, ring_twist_per_z,
-    -z_half, 0.0,
-    ring_comp_rad
-)
-ring_bottom_cq = cq.Workplane("XY").add(cq.Shape(ring_bottom_shape))
-exporters.export(ring_bottom_cq, os.path.join(OUTPUT_DIR, "ring_bottom_PRINT.step"))
-exporters.export(ring_bottom_cq, os.path.join(OUTPUT_DIR, "ring_bottom_PRINT.stl"))
-print("  Exported ring_bottom_PRINT.step/.stl")
+ring_shapes_for_assembly = []
 
-# Top half: z = 0 to z_half
-print("  Creating ring_top...")
-ring_top_shape = create_ring_half(
-    ring_filtered, ring_twist_per_z,
-    0.0, z_half,
-    ring_comp_rad
-)
-ring_top_cq = cq.Workplane("XY").add(cq.Shape(ring_top_shape))
-exporters.export(ring_top_cq, os.path.join(OUTPUT_DIR, "ring_top_PRINT.step"))
-exporters.export(ring_top_cq, os.path.join(OUTPUT_DIR, "ring_top_PRINT.stl"))
-print("  Exported ring_top_PRINT.step/.stl")
+if GEAR_TYPE == 'herringbone':
+    # Herringbone: split ring into two halves at z=0 (V-pattern requires it)
+    print("\nGenerating Split Ring gear...")
+
+    # Bottom half: z = -z_half to 0
+    print("  Creating ring_bottom...")
+    ring_bottom_shape = create_ring_half(
+        ring_filtered, ring_twist_per_z,
+        -z_half, 0.0,
+        ring_comp_rad
+    )
+    ring_bottom_cq = cq.Workplane("XY").add(cq.Shape(ring_bottom_shape))
+    exporters.export(ring_bottom_cq, os.path.join(OUTPUT_DIR, "ring_bottom_PRINT.step"))
+    exporters.export(ring_bottom_cq, os.path.join(OUTPUT_DIR, "ring_bottom_PRINT.stl"))
+    print("  Exported ring_bottom_PRINT.step/.stl")
+
+    # Top half: z = 0 to z_half
+    print("  Creating ring_top...")
+    ring_top_shape = create_ring_half(
+        ring_filtered, ring_twist_per_z,
+        0.0, z_half,
+        ring_comp_rad
+    )
+    ring_top_cq = cq.Workplane("XY").add(cq.Shape(ring_top_shape))
+    exporters.export(ring_top_cq, os.path.join(OUTPUT_DIR, "ring_top_PRINT.step"))
+    exporters.export(ring_top_cq, os.path.join(OUTPUT_DIR, "ring_top_PRINT.stl"))
+    print("  Exported ring_top_PRINT.step/.stl")
+
+    ring_shapes_for_assembly = [ring_bottom_shape, ring_top_shape]
+
+else:
+    # Spur or helix: single-piece ring
+    print("\nGenerating Ring gear...")
+    ring_shape = create_ring_half(
+        ring_filtered, ring_twist_per_z,
+        -z_half, z_half,
+        ring_comp_rad
+    )
+    ring_cq = cq.Workplane("XY").add(cq.Shape(ring_shape))
+    exporters.export(ring_cq, os.path.join(OUTPUT_DIR, "ring_PRINT.step"))
+    exporters.export(ring_cq, os.path.join(OUTPUT_DIR, "ring_PRINT.stl"))
+    print("  Exported ring_PRINT.step/.stl")
+
+    ring_shapes_for_assembly = [ring_shape]
 
 
 # --- Create Assembly ---
@@ -430,8 +464,8 @@ try:
     builder.Add(compound, sun_shape)
     for ps in planet_shapes:
         builder.Add(compound, ps)
-    builder.Add(compound, ring_bottom_shape)
-    builder.Add(compound, ring_top_shape)
+    for rs in ring_shapes_for_assembly:
+        builder.Add(compound, rs)
 
     # Write STEP directly via OCC to force single-part (no assembly structure)
     writer = STEPControl_Writer()
@@ -450,16 +484,19 @@ except Exception as e:
 
 
 print("\n" + "=" * 60)
-print(f"GENERATION COMPLETE — Run {next_num:03d}")
+print(f"GENERATION COMPLETE -- {GEAR_TYPE} Run {next_num:03d}")
 print(f"Output directory: {OUTPUT_DIR}/")
 print("\n--- Manufacturing (_PRINT) ---")
 print("  Individual parts, clean geometry, ready for slicer/manufacturer:")
 print("  - sun_PRINT.step/.stl")
 print(f"  - planet_0_PRINT.step/.stl through planet_{N_planets-1}_PRINT.step/.stl")
-print("  - ring_bottom_PRINT.step/.stl")
-print("  - ring_top_PRINT.step/.stl")
+if GEAR_TYPE == 'herringbone':
+    print("  - ring_bottom_PRINT.step/.stl")
+    print("  - ring_top_PRINT.step/.stl")
+else:
+    print("  - ring_PRINT.step/.stl")
 print("\n--- CAD Integration (_CAD) ---")
 print("  Multi-body part (all gears in one coordinate system):")
-print("  - gearbox_CAD.step  →  import as PART in CATIA, not assembly")
+print("  - gearbox_CAD.step  ->  import as PART in CATIA, not assembly")
 print("\nNext: Import gearbox_CAD.step into CATIA as a part, constrain to skeleton.")
 print("=" * 60)
