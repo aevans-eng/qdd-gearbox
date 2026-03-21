@@ -8,169 +8,500 @@
   "topics": {
     "01": {
       "name": "Motor Fundamentals",
-      "gaps": ["FOC mechanism", "Lorentz force / linearity", "Kt/Ke/Kv triangle", "pole pairs and electrical angle", "phase current vs Iq", "nonlinearity sources"],
+      "gaps": [
+        "FOC mechanism",
+        "Lorentz force / linearity",
+        "Kt/Ke/Kv triangle",
+        "pole pairs and electrical angle",
+        "phase current vs Iq",
+        "nonlinearity sources"
+      ],
       "steps": {
-        "diagnose": { "done": true, "date": "2026-03-20" },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": true,
+          "date": "2026-03-20"
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "02": {
       "name": "Torque-Speed Envelope",
-      "gaps": [],
+      "gaps": [
+        "back-EMF mechanism and equation (V_bemf = Ke * omega)",
+        "voltage headroom and current limiting at speed",
+        "no-load speed equation and what sets the ceiling",
+        "speed-torque line construction and operating envelope",
+        "full torque at max speed - why impossible electrically"
+      ],
       "steps": {
-        "diagnose": { "done": true, "date": "2026-03-20" },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": true,
+          "date": "2026-03-20"
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "03": {
       "name": "Thermal",
-      "gaps": [],
+      "gaps": [
+        "three heat sources (copper/iron/friction) and their dependencies",
+        "I-squared relationship - why squaring and what it means for high torque",
+        "stalled vs spinning motor heat generation (mechanical power output)",
+        "thermal resistance Rth - what it is and what determines it physically",
+        "steady-state thermal model (T = T_amb + P_loss * Rth)"
+      ],
       "steps": {
-        "diagnose": { "done": true, "date": "2026-03-20" },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": true,
+          "date": "2026-03-20"
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "04": {
       "name": "Friction & Backdrivability",
-      "gaps": [],
+      "gaps": [
+        "Coulomb friction model (constant, speed-independent)",
+        "viscous friction model (proportional to speed)",
+        "combined friction model tau_f = tau_c + b*omega",
+        "why multiple speed measurements needed (two unknowns)",
+        "backdrivability definition and connection to impedance control",
+        "gear ratio effect on reflected friction (N-squared)"
+      ],
       "steps": {
-        "diagnose": { "done": true, "date": "2026-03-20" },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": true,
+          "date": "2026-03-20"
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "05": {
       "name": "Gearbox Mechanics",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "06": {
       "name": "Measurement & Instrumentation",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "07": {
       "name": "Testing Methodology",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "08": {
       "name": "Dynamics & System ID",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "09": {
       "name": "Impedance Control",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "10": {
       "name": "Backlash & Compliance",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "11": {
       "name": "GD&T & Tolerancing",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "12": {
       "name": "DFM & Manufacturing",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     },
     "13": {
       "name": "FEA Literacy",
       "gaps": [],
       "steps": {
-        "diagnose": { "done": false },
-        "learn": { "done": false },
-        "distill": { "done": false },
-        "practice": { "done": false },
-        "grade": { "done": false, "score": { "solid": 0, "partial": 0, "redo": 0 } },
-        "drill": { "done": false }
+        "diagnose": {
+          "done": false
+        },
+        "learn": {
+          "done": false
+        },
+        "distill": {
+          "done": false
+        },
+        "practice": {
+          "done": false
+        },
+        "grade": {
+          "done": false,
+          "score": {
+            "solid": 0,
+            "partial": 0,
+            "redo": 0
+          }
+        },
+        "drill": {
+          "done": false
+        }
       }
     }
   },
   "unlocks": {
-    "resume_update": { "required_topics": ["01", "02"], "unlocked": false, "label": "Update resume with BLDC motor characterization" },
-    "test_campaign": { "required_topics": ["01", "02", "03", "04", "05"], "unlocked": false, "label": "Start test campaign (Phases 0-1)" },
-    "portfolio_explainer": { "required_topics": ["01", "02", "03", "04", "05"], "requires_flag": "test_data_collected", "unlocked": false, "label": "Write first-principles explainer for portfolio" },
-    "linkedin_post": { "required_topics": ["01", "02", "03", "04", "05", "06", "07"], "unlocked": false, "label": "Post on LinkedIn about testing methodology" },
-    "message_tesla": { "required_topics": ["01", "02", "03", "04", "05", "06", "07", "08", "09"], "unlocked": false, "label": "Message Tesla contacts about impedance control" },
-    "portfolio_demo": { "required_topics": ["08", "09"], "requires_flag": "impedance_demo_done", "unlocked": false, "label": "Add impedance control demo to portfolio" },
-    "interview_ready": { "required_topics": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"], "unlocked": false, "label": "Interview-ready — reach out to recruiters" }
+    "resume_update": {
+      "required_topics": [
+        "01",
+        "02"
+      ],
+      "unlocked": false,
+      "label": "Update resume with BLDC motor characterization"
+    },
+    "test_campaign": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "unlocked": false,
+      "label": "Start test campaign (Phases 0-1)"
+    },
+    "portfolio_explainer": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "requires_flag": "test_data_collected",
+      "unlocked": false,
+      "label": "Write first-principles explainer for portfolio"
+    },
+    "linkedin_post": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07"
+      ],
+      "unlocked": false,
+      "label": "Post on LinkedIn about testing methodology"
+    },
+    "message_tesla": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09"
+      ],
+      "unlocked": false,
+      "label": "Message Tesla contacts about impedance control"
+    },
+    "portfolio_demo": {
+      "required_topics": [
+        "08",
+        "09"
+      ],
+      "requires_flag": "impedance_demo_done",
+      "unlocked": false,
+      "label": "Add impedance control demo to portfolio"
+    },
+    "interview_ready": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13"
+      ],
+      "unlocked": false,
+      "label": "Interview-ready \u00e2\u20ac\u201d reach out to recruiters"
+    }
   },
   "flags": {
     "test_data_collected": false,
