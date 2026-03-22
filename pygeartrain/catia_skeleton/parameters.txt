@@ -1,0 +1,29 @@
+# Planetary Gearbox Skeleton Parameters
+# Lines starting with # are comments
+# Format: ParameterName=Value
+
+# General Parameters
+Module=2
+FaceWidth=15
+PlanetCount=3
+
+# Sun Gear
+SunPitchDiameter=40
+SunTeeth=20
+
+# Planet Gear
+PlanetPitchDiameter=60
+PlanetTeeth=30
+
+# Ring Gear
+RingPitchDiameter=160
+RingTeeth=80
+RingWallThickness=10
+
+# Carrier (optional, set to 0 to skip)
+CarrierDiameter=150
+CarrierThickness=8
+
+# Axial Positions (Z offset from origin)
+GearZPosition=0
+CarrierZPosition=-10

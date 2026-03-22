@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 6B — Split Screen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #F8FAF7;
+    background-image: radial-gradient(rgba(163, 177, 158, 0.25) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: #1A1A1B;
+  }
+
+  /* Nav */
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; }
+  nav .name { font-size: 14px; font-weight: 600; }
+  nav .links a { font-size: 14px; font-weight: 500; color: #1A1A1B; opacity: 0.5; text-decoration: none; margin-left: 20px; }
+  nav .links a:hover { opacity: 1; }
+
+  /* Split layout */
+  .split {
+    height: calc(100vh - 56px); display: flex; padding: 0 32px 32px; gap: 24px;
+  }
+
+  /* Left: hero image */
+  .split-left {
+    flex: 0 0 50%; background: #000; border-radius: 4px; overflow: hidden;
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .split-left img { width: 100%; height: 100%; object-fit: cover; }
+  .split-left .ph { color: #444; font-size: 13px; font-style: italic; }
+  .split-left .left-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 32px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  }
+  .split-left .left-overlay h1 { font-size: 36px; font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+  .split-left .left-overlay p { font-size: 15px; color: rgba(255,255,255,0.6); margin-top: 6px; }
+
+  /* Right: info panel */
+  .split-right {
+    flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto;
+  }
+
+  /* Specs strip */
+  .specs-strip {
+    display: flex; gap: 20px; padding: 12px 0; border-bottom: 1px solid #e5e7eb; flex-shrink: 0;
+  }
+  .ss-item .ss-v { font-size: 20px; font-weight: 700; }
+  .ss-item .ss-l { font-size: 10px; font-weight: 600; color: #4A5568; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Section row */
+  .section-row {
+    display: flex; gap: 12px; align-items: center; padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background 0.15s;
+    border-radius: 4px; padding: 10px 12px; position: relative;
+  }
+  .section-row:hover { background: #fff; }
+  .section-row .sr-thumb {
+    width: 80px; height: 56px; background: #000; border-radius: 3px; flex-shrink: 0;
+    overflow: hidden; display: flex; align-items: center; justify-content: center;
+  }
+  .section-row .sr-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .section-row .sr-thumb .ph { color: #555; font-size: 8px; font-style: italic; text-align: center; }
+  .section-row .sr-thumb.dashed { background: transparent; border: 1.5px dashed #d1d5db; }
+  .section-row .sr-thumb.dashed .ph { color: #aaa; }
+  .section-row .sr-info { flex: 1; min-width: 0; }
+  .section-row .sr-tag { font-size: 9px; font-weight: 600; color: #4A5568; text-transform: uppercase; letter-spacing: 0.06em; }
+  .section-row .sr-title { font-size: 14px; font-weight: 600; margin-top: 1px; }
+  .section-row .sr-desc { font-size: 11px; color: #4A5568; line-height: 1.4; margin-top: 1px; }
+  .section-row .sr-arrow { color: #ccc; font-size: 14px; flex-shrink: 0; transition: color 0.2s; }
+  .section-row:hover .sr-arrow { color: #666; }
+
+  /* Hover detail popover */
+  .section-row .popover {
+    display: none; position: absolute; left: -320px; top: 0; width: 300px;
+    background: #111; color: #ccc; padding: 16px; border-radius: 4px; z-index: 10;
+    font-size: 12px; line-height: 1.6; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .section-row:hover .popover { display: block; }
+  .popover h4 { font-size: 14px; color: #fff; font-weight: 600; margin-bottom: 6px; }
+  .popover .jump { display: inline-block; margin-top: 10px; font-size: 11px; color: #7ec99d; font-weight: 600; text-decoration: none; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex; gap: 16px; padding: 12px 0; border-top: 1px solid #e5e7eb; flex-shrink: 0; margin-top: auto;
+  }
+  .sb-item { flex: 1; text-align: center; }
+  .sb-item .sb-v { font-size: 18px; font-weight: 700; }
+  .sb-item .sb-l { font-size: 9px; color: #4A5568; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Timeline dots */
+  .timeline-bar {
+    display: flex; align-items: center; gap: 8px; padding: 8px 0; flex-shrink: 0;
+    border-top: 1px solid #e5e7eb; flex-wrap: wrap;
+  }
+  .tl-tag { font-size: 9px; font-weight: 600; color: #4A5568; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
+  .tl-dot { font-size: 10px; font-weight: 600; }
+  .tl-done { color: #2d6a4f; }
+  .tl-now { color: #b08d2a; }
+  .tl-future { color: #bbb; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="name">Aaron Evans</span>
+  <div class="links"><a href="#">Home</a><a href="#">About</a><a href="#">Projects</a></div>
+</nav>
+
+<div class="split">
+
+  <!-- LEFT: Hero -->
+  <div class="split-left">
+    <div class="ph">[ Hero: CATIA cross-section or assembled prototype on black ]</div>
+    <div class="left-overlay">
+      <h1>QDD Gearbox<br>Actuator</h1>
+      <p>3D-printed planetary gearbox for backdrivable robotic actuators</p>
+    </div>
+  </div>
+
+  <!-- RIGHT: Info panel -->
+  <div class="split-right">
+
+    <div class="specs-strip">
+      <div class="ss-item"><div class="ss-v">5:1</div><div class="ss-l">Ratio</div></div>
+      <div class="ss-item"><div class="ss-v">&le;0.5&deg;</div><div class="ss-l">Backlash</div></div>
+      <div class="ss-item"><div class="ss-v">16 Nm</div><div class="ss-l">Peak</div></div>
+      <div class="ss-item"><div class="ss-v">&lt;$120</div><div class="ss-l">Budget</div></div>
+      <div class="ss-item"><div class="ss-v">FDM</div><div class="ss-l">Printed</div></div>
+    </div>
+
+    <!-- Sections -->
+    <div class="section-row">
+      <div class="sr-thumb"><div class="ph">Trade study</div></div>
+      <div class="sr-info">
+        <div class="sr-tag">Design</div>
+        <div class="sr-title">Trade Studies</div>
+        <div class="sr-desc">Pugh matrices: gear type, ratio, bearings. Planetary 4.40/5.</div>
+      </div>
+      <span class="sr-arrow">&#8250;</span>
+      <div class="popover">
+        <h4>Weighted Trade Studies</h4>
+        <p>6 gear concepts across 7 criteria. 5:1 ratio at 4.83/5. Ball bearings won on cost-dominant weighting. Key insight: interface failure > gearbox failure in student robotics.</p>
+        <a href="#" class="jump">Jump to details &#8595;</a>
+      </div>
+    </div>
+
+    <div class="section-row">
+      <div class="sr-thumb"><div class="ph">CATIA</div></div>
+      <div class="sr-info">
+        <div class="sr-tag">CAD</div>
+        <div class="sr-title">CATIA V6 Parametric Design</div>
+        <div class="sr-desc">Skeleton-driven. ~60-80 hrs learning from scratch.</div>
+      </div>
+      <span class="sr-arrow">&#8250;</span>
+      <div class="popover">
+        <h4>Parametric Architecture</h4>
+        <p>Master skeleton -> all parameters. No B-Rep refs. Body-level patterning. Chain-of-zeros positioning. Placeholder gears as geometric contracts.</p>
+        <a href="#" class="jump">Jump to details &#8595;</a>
+      </div>
+    </div>
+
+    <div class="section-row">
+      <div class="sr-thumb"><div class="ph">Coupon</div></div>
+      <div class="sr-info">
+        <div class="sr-tag">Manufacturing</div>
+        <div class="sr-title">FDM Tolerancing & Calibration</div>
+        <div class="sr-desc">ISO fits -> FDM offsets. Coupon-validated bearing interfaces.</div>
+      </div>
+      <span class="sr-arrow">&#8250;</span>
+      <div class="popover">
+        <h4>Calibration Pipeline</h4>
+        <p>Finger-press transition fits on all bearings. 5 offset parameters in skeleton. Self-tap validated M3-M5. Print orientation trade-offs documented.</p>
+        <a href="#" class="jump">Jump to details &#8595;</a>
+      </div>
+    </div>
+
+    <div class="section-row">
+      <div class="sr-thumb"><div class="ph">Prototype</div></div>
+      <div class="sr-info">
+        <div class="sr-tag">Prototype</div>
+        <div class="sr-title">Rev 00A Build</div>
+        <div class="sr-desc">First prototype. Bambu P1S, PLA, off-the-shelf bearings.</div>
+      </div>
+      <span class="sr-arrow">&#8250;</span>
+      <div class="popover">
+        <h4>Rev 00A Prototype</h4>
+        <p>Full assembly built. Fits validated, bearing offsets calibrated. Housing, carrier, gears, motor mount. Identified 5 issues for structured testing.</p>
+        <a href="#" class="jump">Jump to details &#8595;</a>
+      </div>
+    </div>
+
+    <div class="section-row">
+      <div class="sr-thumb"><div class="ph">Testing</div></div>
+      <div class="sr-info">
+        <div class="sr-tag">Validation</div>
+        <div class="sr-title">Structured Testing (5 tests)</div>
+        <div class="sr-desc">Root cause analysis. 4/5 resolved. 13 changes scoped for Rev 00B.</div>
+      </div>
+      <span class="sr-arrow">&#8250;</span>
+      <div class="popover">
+        <h4>Testing Results</h4>
+        <p>T-001: gear mesh (spur fix). T-002: lid drag (decouple). T-003: shoulder (print strategy). T-004: indexing (no issue). T-005: bolt torque (marginal, shoulder redesign).</p>
+        <a href="#" class="jump">Jump to details &#8595;</a>
+      </div>
+    </div>
+
+    <div class="section-row">
+      <div class="sr-thumb dashed"><div class="ph">GD&T</div></div>
+      <div class="sr-info">
+        <div class="sr-tag">Coming Soon</div>
+        <div class="sr-title">GD&T & Engineering Drawings</div>
+        <div class="sr-desc">Formal tolerance callouts. Datum schemes. Stack-up analysis.</div>
+      </div>
+      <span class="sr-arrow">&#8250;</span>
+    </div>
+
+    <div class="section-row">
+      <div class="sr-thumb dashed"><div class="ph">Controls</div></div>
+      <div class="sr-info">
+        <div class="sr-tag">Coming Soon</div>
+        <div class="sr-title">Controls & Motor Integration</div>
+        <div class="sr-desc">ODrive S1, impedance control, backdrivability measurement.</div>
+      </div>
+      <span class="sr-arrow">&#8250;</span>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-bar">
+      <span class="tl-tag">Timeline</span>
+      <span class="tl-dot tl-done">&#9679; Design</span>
+      <span class="tl-dot tl-done">&#9679; CAD</span>
+      <span class="tl-dot tl-done">&#9679; Calibration</span>
+      <span class="tl-dot tl-done">&#9679; Rev 00A</span>
+      <span class="tl-dot tl-now">&#9679; Rev 00B</span>
+      <span class="tl-dot tl-future">&#9675; GD&T</span>
+      <span class="tl-dot tl-future">&#9675; Controls</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="sb-item"><div class="sb-v">5</div><div class="sb-l">Tests</div></div>
+      <div class="sb-item"><div class="sb-v">4</div><div class="sb-l">Root Causes</div></div>
+      <div class="sb-item"><div class="sb-v">13</div><div class="sb-l">Changes</div></div>
+      <div class="sb-item"><div class="sb-v">60-80h</div><div class="sb-l">CATIA</div></div>
+      <div class="sb-item"><div class="sb-v">&lt;$120</div><div class="sb-l">Cost</div></div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

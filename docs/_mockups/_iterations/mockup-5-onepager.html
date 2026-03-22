@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QDD Gearbox Actuator — Aaron Evans</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #F8FAF7;
+    background-image: radial-gradient(rgba(163, 177, 158, 0.25) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: #1A1A1B;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 1100px; margin: 0 auto; padding: 24px 40px;
+  }
+  nav .site-name { font-size: 16px; font-weight: 500; color: #1A1A1B; text-decoration: none; }
+  nav .nav-links { display: flex; gap: 24px; }
+  nav .nav-links a { font-size: 16px; font-weight: 500; color: #1A1A1B; text-decoration: none; opacity: 0.7; transition: opacity 0.2s; }
+  nav .nav-links a:hover { opacity: 1; }
+
+  /* ===== HERO ===== */
+  .hero {
+    max-width: 1100px; margin: 0 auto; padding: 40px 40px 0;
+  }
+  .hero-image {
+    width: 100%; height: 420px; background: #000; border-radius: 4px;
+    overflow: hidden; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-image img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-image .ph { color: #555; font-size: 14px; font-style: italic; }
+  .hero-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 40px; background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  }
+  .hero-overlay h1 { font-size: 48px; font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+  .hero-overlay p { font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 8px; max-width: 600px; line-height: 1.5; }
+
+  /* ===== SPECS BAR ===== */
+  .specs {
+    max-width: 1100px; margin: 0 auto; padding: 32px 40px;
+    display: flex; gap: 48px; flex-wrap: wrap;
+  }
+  .spec-item .spec-val { font-size: 24px; font-weight: 700; color: #1A1A1B; }
+  .spec-item .spec-lbl { font-size: 14px; font-weight: 600; color: #4A5568; text-transform: uppercase; letter-spacing: 0.03em; }
+
+  /* ===== CONTENT AREA ===== */
+  .content { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+  /* ===== SECTION ===== */
+  .section { padding: 80px 0; }
+  .section + .section { border-top: 1px solid #e5e7eb; }
+  .section-label { font-size: 14px; font-weight: 600; color: #4A5568; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 8px; }
+  .section h2 { font-size: 32px; font-weight: 700; color: #1A1A1B; margin-bottom: 12px; }
+  .section .section-desc { font-size: 18px; color: #2D3748; line-height: 1.6; max-width: 700px; margin-bottom: 32px; }
+
+  /* ===== 2-COL GRID ===== */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+
+  /* ===== IMAGE CARD ===== */
+  .img-card {
+    background: #000; border-radius: 4px; overflow: hidden; position: relative;
+    cursor: pointer; transition: transform 0.2s;
+  }
+  .img-card:hover { transform: translateY(-2px); }
+  .img-card .img-area {
+    height: 240px; display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .img-card .img-area img { width: 100%; height: 100%; object-fit: cover; }
+  .img-card .img-area .ph { color: #555; font-size: 13px; font-style: italic; text-align: center; padding: 20px; }
+  .img-card .img-caption {
+    padding: 16px 20px; background: #000;
+  }
+  .img-card .img-caption .caption-tag { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .img-card .img-caption h4 { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .img-card .img-caption p { font-size: 14px; color: #999; line-height: 1.5; }
+
+  /* Wide card */
+  .img-card.wide { grid-column: span 2; }
+  .img-card.wide .img-area { height: 320px; }
+
+  /* ===== DETAIL PANEL (hidden by default) ===== */
+  .img-card .detail-panel {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+    background: #111;
+  }
+  .img-card.open .detail-panel { max-height: 600px; }
+  .detail-panel-inner {
+    padding: 20px; border-top: 1px solid #222;
+    font-size: 14px; color: #aaa; line-height: 1.7;
+  }
+  .detail-panel-inner table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  .detail-panel-inner th { text-align: left; padding: 6px 8px; border-bottom: 1px solid #333; color: #666; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .detail-panel-inner td { padding: 6px 8px; border-bottom: 1px solid #1a1a1a; color: #bbb; font-size: 13px; }
+  .detail-panel-inner tr.w td { color: #7ec99d; font-weight: 600; }
+  .detail-panel-inner ul { padding-left: 18px; margin: 8px 0; }
+  .detail-panel-inner li { margin-bottom: 4px; }
+
+  .click-hint { font-size: 12px; color: #555; margin-top: 8px; }
+  .img-card.open .click-hint { display: none; }
+
+  /* ===== STATS ROW ===== */
+  .stats-row { display: flex; gap: 32px; flex-wrap: wrap; margin: 24px 0; }
+  .stat-box {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 4px;
+    padding: 16px 20px; min-width: 140px; flex: 1;
+  }
+  .stat-box .stat-val { font-size: 20px; font-weight: 700; color: #1A1A1B; }
+  .stat-box .stat-lbl { font-size: 13px; color: #4A5568; margin-top: 2px; }
+
+  /* ===== TEST RESULT ROW ===== */
+  .test-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .test-item {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 4px;
+    padding: 16px; cursor: pointer; transition: border-color 0.2s;
+  }
+  .test-item:hover { border-color: #999; }
+  .test-item .t-id { font-size: 12px; font-weight: 600; color: #4A5568; text-transform: uppercase; }
+  .test-item .t-name { font-size: 15px; font-weight: 600; margin: 4px 0; }
+  .test-item .t-result { font-size: 13px; color: #2D3748; }
+  .badge-sm { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+  .b-fixed { background: #d4edda; color: #1a5632; }
+  .b-ok { background: #d1ecf1; color: #0c5460; }
+  .b-warn { background: #fff3cd; color: #856404; }
+
+  /* ===== COMING SOON CARD ===== */
+  .coming-soon {
+    border: 2px dashed #d1d5db; border-radius: 4px; padding: 40px;
+    text-align: center; color: #4A5568;
+  }
+  .coming-soon h4 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .coming-soon p { font-size: 14px; color: #718096; }
+
+  /* ===== ROADMAP ===== */
+  .roadmap-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .rm-item {
+    flex: 1; min-width: 160px; padding: 16px; border-radius: 4px;
+    background: #fff; border: 1px solid #e5e7eb;
+  }
+  .rm-item.active { border-color: #4A5568; }
+  .rm-item.future { border-style: dashed; }
+  .rm-item h5 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .rm-item p { font-size: 13px; color: #4A5568; line-height: 1.4; }
+  .rm-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; }
+  .rm-done { background: #2d6a4f; }
+  .rm-now { background: #b08d2a; }
+  .rm-later { background: #ccc; }
+
+  /* ===== FOOTER CTA ===== */
+  .footer-cta {
+    max-width: 1100px; margin: 0 auto; padding: 80px 40px;
+    text-align: center; border-top: 1px solid #e5e7eb;
+  }
+  .footer-cta h2 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+  .footer-cta p { font-size: 18px; color: #2D3748; }
+  .footer-cta a { color: #1A1A1B; font-weight: 600; text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="site-name">Aaron Evans</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="#">Projects</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-image">
+    <div class="ph">[ Hero: cross-section render or assembled prototype photo on black background ]</div>
+    <div class="hero-overlay">
+      <h1>QDD Gearbox Actuator</h1>
+      <p>A 3D-printed quasi-direct-drive planetary gearbox, designed for backdrivability.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SPECS -->
+<div class="specs">
+  <div class="spec-item"><div class="spec-val">5:1</div><div class="spec-lbl">Ratio</div></div>
+  <div class="spec-item"><div class="spec-val">&le; 0.5&deg;</div><div class="spec-lbl">Backlash</div></div>
+  <div class="spec-item"><div class="spec-val">16 Nm</div><div class="spec-lbl">Peak Torque</div></div>
+  <div class="spec-item"><div class="spec-val">&lt; $120</div><div class="spec-lbl">Budget</div></div>
+  <div class="spec-item"><div class="spec-val">FDM</div><div class="spec-lbl">3D Printed</div></div>
+  <div class="spec-item"><div class="spec-val">&gt; 90%</div><div class="spec-lbl">Efficiency Target</div></div>
+</div>
+
+<div class="content">
+
+  <!-- ===== DESIGN ===== -->
+  <div class="section">
+    <div class="section-label">Design</div>
+    <h2>Trade Studies</h2>
+    <p class="section-desc">Every major decision quantified through weighted Pugh matrices. 6 gear concepts, 4 ratios, 6 bearing types.</p>
+
+    <div class="grid-2">
+      <div class="img-card" onclick="this.classList.toggle('open')">
+        <div class="img-area"><div class="ph">[ Diagram: gear type trade study matrix or visual comparison ]</div></div>
+        <div class="img-caption">
+          <div class="caption-tag">Winner: Planetary (4.40/5)</div>
+          <h4>Gear Type Selection</h4>
+          <p>6 concepts scored across cost, transparency, DFM, durability.</p>
+          <div class="click-hint">Click for scores</div>
+        </div>
+        <div class="detail-panel"><div class="detail-panel-inner">
+          <table>
+            <tr><th>Concept</th><th>Cost</th><th>Transparency</th><th>DFM</th><th>Total</th></tr>
+            <tr class="w"><td>Planetary</td><td>5</td><td>4</td><td>4</td><td>4.40</td></tr>
+            <tr><td>Sequential</td><td>4.5</td><td>4</td><td>4</td><td>4.05</td></tr>
+            <tr><td>Drive Belt</td><td>3.5</td><td>5</td><td>4</td><td>3.98</td></tr>
+            <tr><td>Cycloidal</td><td>3</td><td>3.5</td><td>3</td><td>3.73</td></tr>
+          </table>
+        </div></div>
+      </div>
+
+      <div class="img-card" onclick="this.classList.toggle('open')">
+        <div class="img-area"><div class="ph">[ Diagram: ratio comparison or transparency vs torque chart ]</div></div>
+        <div class="img-caption">
+          <div class="caption-tag">Ratio & Bearings</div>
+          <h4>5:1 Ratio, Ball Bearings</h4>
+          <p>Best transparency-torque compromise. Cost-dominant bearing selection for prototype budget.</p>
+          <div class="click-hint">Click for scores</div>
+        </div>
+        <div class="detail-panel"><div class="detail-panel-inner">
+          <p><strong>Ratio:</strong> 5:1 won at 4.83/5 over 4:1 (4.80), 6:1 (4.60), 7:1 (4.53).</p>
+          <p style="margin-top:8px;"><strong>Bearings:</strong> Ball at 4.05/5. Cost weighted 60% reflecting $120 budget.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CAD ===== -->
+  <div class="section">
+    <div class="section-label">CAD</div>
+    <h2>CATIA V6 Parametric Architecture</h2>
+    <p class="section-desc">~60-80 hours learning CATIA V6 from scratch. Skeleton-driven design -- every part reads from a single source of truth.</p>
+
+    <div class="grid-2">
+      <div class="img-card" onclick="this.classList.toggle('open')">
+        <div class="img-area"><div class="ph">[ CATIA: full assembly cross-section showing gears, bearings, housing ]</div></div>
+        <div class="img-caption">
+          <h4>Assembly Cross-Section</h4>
+          <p>Skeleton-driven. Parts constrain to skeleton, never to each other.</p>
+          <div class="click-hint">Click for principles</div>
+        </div>
+        <div class="detail-panel"><div class="detail-panel-inner">
+          <ul>
+            <li><strong>Single source of truth</strong> -- all positioning in master skeleton</li>
+            <li><strong>No B-Rep refs</strong> -- sketch on planes, reference wireframe only</li>
+            <li><strong>Body-level patterning</strong> -- more stable than feature-level</li>
+            <li><strong>Chain-of-zeros</strong> -- zero offsets at every hierarchy level</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="img-card">
+        <div class="img-area"><div class="ph">[ CATIA: assembly with real cycloidal tooth geometry visible ]</div></div>
+        <div class="img-caption">
+          <h4>Real Gear Geometry</h4>
+          <p>Cycloidal tooth profiles generated in Python, imported as STEP, integrated into skeleton assembly.</p>
+        </div>
+      </div>
+
+      <div class="img-card">
+        <div class="img-area"><div class="ph">[ CATIA: carrier sub-assembly with cutting bodies and external refs ]</div></div>
+        <div class="img-caption">
+          <h4>Sub-Assembly Architecture</h4>
+          <p>Cutting bodies and skeleton refs propagate bearing pockets and bolt holes from a single definition.</p>
+        </div>
+      </div>
+
+      <div class="img-card">
+        <div class="img-area"><div class="ph">[ Side-by-side: early learning model vs final skeleton-driven assembly ]</div></div>
+        <div class="img-caption">
+          <div class="caption-tag">Before / After</div>
+          <h4>Learning Progression</h4>
+          <p>First model (no skeleton) vs fully parametric assembly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DFM ===== -->
+  <div class="section">
+    <div class="section-label">Manufacturing</div>
+    <h2>FDM Tolerancing & Calibration</h2>
+    <p class="section-desc">ISO fit intent translated to FDM offsets. Calibration coupons validate every interface before the full build.</p>
+
+    <div class="grid-2">
+      <div class="img-card">
+        <div class="img-area"><div class="ph">[ CATIA: calibration coupon sketch with dimensioned bearing bores ]</div></div>
+        <div class="img-caption">
+          <h4>Calibration Coupon</h4>
+          <p>Representative features printed and measured. Offsets calculated per interface.</p>
+        </div>
+      </div>
+
+      <div class="img-card" onclick="this.classList.toggle('open')">
+        <div class="img-area"><div class="ph">[ Photo: printed coupon with calipers measuring bore ]</div></div>
+        <div class="img-caption">
+          <h4>Offset Validation</h4>
+          <p>All bearing interfaces target finger-press transition fits. FDM texture provides grip.</p>
+          <div class="click-hint">Click for offset table</div>
+        </div>
+        <div class="detail-panel"><div class="detail-panel-inner">
+          <table>
+            <tr><th>Interface</th><th>Offset</th><th>Status</th></tr>
+            <tr><td>Main bearing bore</td><td>+0.10mm</td><td>Validated</td></tr>
+            <tr><td>Carrier bearing bore</td><td>+0.10mm</td><td>Applied</td></tr>
+            <tr><td>Lid bearing bore</td><td>+0.10mm</td><td>Validated</td></tr>
+            <tr><td>Planet bearing bore</td><td>+0.15mm</td><td>Pending</td></tr>
+            <tr><td>Ring-to-housing</td><td>+0.30mm</td><td>Applied</td></tr>
+          </table>
+          <p style="margin-top:8px;">Self-tap pilots: M3=2.6mm, M4=3.6mm, M5=4.6mm.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PROTOTYPE ===== -->
+  <div class="section">
+    <div class="section-label">Prototype</div>
+    <h2>Rev 00A Build</h2>
+    <p class="section-desc">First physical prototype. Bambu P1S, PLA. Off-the-shelf bearings and shoulder screws.</p>
+
+    <div class="grid-2">
+      <div class="img-card wide">
+        <div class="img-area" style="height:300px;"><div class="ph">[ Photo: assembled prototype, isometric — the money shot ]</div></div>
+        <div class="img-caption">
+          <h4>Assembled Gearbox</h4>
+          <p>Housing, carrier, gears, bearings, motor mount. All FDM printed under $120.</p>
+        </div>
+      </div>
+
+      <div class="img-card">
+        <div class="img-area"><div class="ph">[ Photo: disassembled parts laid out ]</div></div>
+        <div class="img-caption">
+          <h4>Parts Breakdown</h4>
+          <p>Every printed and purchased component.</p>
+        </div>
+      </div>
+
+      <div class="img-card">
+        <div class="img-area"><div class="ph">[ Photo: gear mesh close-up ]</div></div>
+        <div class="img-caption">
+          <h4>Gear Mesh</h4>
+          <p>Cycloidal tooth profile. Herringbone alignment proved problematic at this scale.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TESTING ===== -->
+  <div class="section">
+    <div class="section-label">Validation</div>
+    <h2>Structured Testing</h2>
+    <p class="section-desc">5 tests. Unknowns register, dependency mapping, requirements traceability. Root cause analysis, not just pass/fail.</p>
+
+    <div class="test-row">
+      <div class="test-item">
+        <div class="t-id">T-001</div>
+        <div class="t-name">Gear Mesh</div>
+        <div class="t-result"><span class="badge-sm b-fixed">Fixed</span> Herringbone misalignment. Switched to spur.</div>
+      </div>
+      <div class="test-item">
+        <div class="t-id">T-002</div>
+        <div class="t-name">Lid Drag</div>
+        <div class="t-result"><span class="badge-sm b-fixed">Fixed</span> Over-constraint. Decoupled lid.</div>
+      </div>
+      <div class="test-item">
+        <div class="t-id">T-003</div>
+        <div class="t-name">Shoulder</div>
+        <div class="t-result"><span class="badge-sm b-fixed">Fixed</span> Print artifact. Reoriented.</div>
+      </div>
+      <div class="test-item">
+        <div class="t-id">T-004</div>
+        <div class="t-name">Indexing</div>
+        <div class="t-result"><span class="badge-sm b-ok">No Issue</span> No load path.</div>
+      </div>
+      <div class="test-item">
+        <div class="t-id">T-005</div>
+        <div class="t-name">Bolt Torque</div>
+        <div class="t-result"><span class="badge-sm b-warn">Marginal</span> Shoulder redesign.</div>
+      </div>
+    </div>
+
+    <div class="stats-row" style="margin-top:32px;">
+      <div class="stat-box"><div class="stat-val">5</div><div class="stat-lbl">Tests Completed</div></div>
+      <div class="stat-box"><div class="stat-val">4</div><div class="stat-lbl">Root Causes Found</div></div>
+      <div class="stat-box"><div class="stat-val">13</div><div class="stat-lbl">Rev 00B Changes Scoped</div></div>
+      <div class="stat-box"><div class="stat-val">11</div><div class="stat-lbl">Requirements Tracked</div></div>
+    </div>
+  </div>
+
+  <!-- ===== COMING SOON SECTIONS ===== -->
+  <div class="section">
+    <div class="section-label">Coming Soon</div>
+    <h2>In Progress</h2>
+
+    <div class="grid-2">
+      <div class="coming-soon">
+        <h4>GD&T & Engineering Drawings</h4>
+        <p>Formal tolerance callouts. Housing, carrier, and gear drawings with datum schemes.</p>
+      </div>
+      <div class="coming-soon">
+        <h4>Tolerance Stack-Up Analysis</h4>
+        <p>Quantitative worst-case and statistical stack-up across critical interfaces.</p>
+      </div>
+      <div class="coming-soon">
+        <h4>Controls & Motor Integration</h4>
+        <p>ODrive S1, impedance control, backdrivability measurement vs CubeMars benchmark.</p>
+      </div>
+      <div class="coming-soon">
+        <h4>Rev 00B Test Results</h4>
+        <p>Spur gears, shoulder redesign, decoupled lid. Before/after comparison data.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ROADMAP ===== -->
+  <div class="section">
+    <div class="section-label">Timeline</div>
+    <h2>Roadmap</h2>
+    <div class="roadmap-row">
+      <div class="rm-item"><h5><span class="rm-dot rm-done"></span>Design Sprint</h5><p>Jan 4 -- Requirements, trade studies, initial CAD</p></div>
+      <div class="rm-item"><h5><span class="rm-dot rm-done"></span>CATIA V6</h5><p>Jan-Feb -- Parametric assembly from scratch</p></div>
+      <div class="rm-item"><h5><span class="rm-dot rm-done"></span>Calibration</h5><p>Feb 19 -- Coupon printed, offsets validated</p></div>
+      <div class="rm-item"><h5><span class="rm-dot rm-done"></span>Rev 00A</h5><p>Mar -- Prototype built, 5 tests, root causes</p></div>
+      <div class="rm-item active"><h5><span class="rm-dot rm-now"></span>Rev 00B</h5><p>Now -- 13 changes, spur gears, CATIA updates</p></div>
+      <div class="rm-item future"><h5><span class="rm-dot rm-later"></span>GD&T</h5><p>Formal drawings</p></div>
+      <div class="rm-item future"><h5><span class="rm-dot rm-later"></span>Controls</h5><p>ODrive, impedance</p></div>
+      <div class="rm-item future"><h5><span class="rm-dot rm-later"></span>Durability</h5><p>Sustained testing</p></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer-cta">
+  <h2>Want to know more?</h2>
+  <p>Full project details, test methodology, and CAD documentation available. <a href="mailto:aaronevans@uvic.ca">Get in touch</a></p>
+</div>
+
+<script>
+// Smooth scroll if we add anchor links later
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>

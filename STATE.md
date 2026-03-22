@@ -1,39 +1,48 @@
 # STATE — QDD Gearbox
-> Last updated: 2026-03-13 (test review complete, Rev 00B changes scoped)
+> Last updated: 2026-03-20 (learning system created)
 
 ## Status
-Testing Rev 00A complete → Rev 00B design changes scoped, ready for CATIA.
+Rev 00B printed and assembled. RTM created. **Learning system built:** 13 workbooks covering motor physics through FEA literacy, with grading workflow and progress tracker. Ready to start Phase 0 testing and workbook study in parallel.
 
 ## What Changed Last Session
-- Completed review of all 5 tests (T-001 through T-005)
-- Identified root causes for 4 major issues
-- Created Rev 00B changes consolidation doc
-- T-004 (carrier indexing) resolved — deprioritized
-- T-005 (bolt torque sensitivity) confirmed shoulder redesign needed
+- Created **QDD Learning System** — 13 graded workbooks (`testing/learn/workbooks/01-*.md` through `13-*.md`)
+  - 141 total questions across concept checks, applied problems, design judgment, and teach-it sections
+  - Progress tracker at `testing/learn/workbooks/_progress.md`
+  - Spec: `docs/specs/2026-03-20-qdd-learning-system-design.md`
+  - Plan: `docs/specs/2026-03-20-qdd-learning-system-plan.md`
+- All workbooks formatted with checkbox confidence ratings, response areas, and "How to use" instructions
 
 ## What's Next (Priority Order)
-1. Implement Rev 00B must-have changes in CATIA (5 changes — see prototypes/rev00b/changes.md)
-2. Print Rev 00B prototype
-3. Re-run validation tests on Rev 00B
-4. Quantitative shoulder deformation measurement (T-003 follow-up)
+1. **Start workbook 01** (Motor Fundamentals) — work through open-book, bring to Claude for grading
+2. **Execute test campaign** — `testing/test-campaign-rev00b.md` (5 phases). Track in `testing/qdd-rtm.xlsx`.
+3. Take hero photo of assembled Rev 00B (clean background, good lighting)
+4. Update portfolio page with test data, plots, and impedance control demo
+5. Phase 2: first-principles explainers on aaronevans.ca (after topics 1-5 complete)
 
 ## File Map
 | What you need | Read this |
 |--------------|-----------|
 | Project rules & conventions | CLAUDE.md |
-| Test tracker & unknowns registry | testing/test-tracker.md |
+| **RTM — requirements, tests, traceability** | **testing/qdd-rtm.xlsx** |
+| **Test campaign procedures** | **testing/test-campaign-rev00b.md** |
+| **Learning workbooks (13)** | **testing/learn/workbooks/** (progress: `_progress.md`) |
 | Rev 00B scoped changes | prototypes/rev00b/changes.md |
+| Rev 00B photos | prototypes/rev00b/photos/ |
+| Official docs (content bank, media plan) | docs/official/ |
+| Research (ODrive, impedance, PLA gears) | research/gemini-deep-research/01-actuator-testing-methodology/ |
 | Test bench design | testing/test-bench-design.md |
 | Documentation index | docs/README.md |
 | Design docs (tolerances, assembly, gear params) | docs/design/ |
+| Future design ideas (bearing, housing, integration) | docs/design/future-ideas.md |
 | CATIA workflows | docs/catia/ |
 | Python calculators | calc/ (gear_geometry, tooth_stress, bearing_life, thermal) |
 | Work logs | docs/log/ |
 | Rev 00A fitment notes | prototypes/rev00a/notes.md |
+| Old test tracker (archived) | testing/_archive/test-tracker-pre-rtm.md |
 
 ## Open Questions / Blockers
-- Quantitative shoulder deformation data needed (visual assessment only so far)
-- 3D printer dimensional bias on sun-planet clearance unknown
-- U-06 through U-10 not started (future gates — need Rev 00B first)
+- Need quantitative test data for Rev 00B (backlash, friction torque)
+- U-06 through U-10 not started (need Rev 00B test results first)
+- Hero photo needed for portfolio thumbnail and LinkedIn
 
 <!-- After updating this file, sync status to discovery-protocol.md registry -->

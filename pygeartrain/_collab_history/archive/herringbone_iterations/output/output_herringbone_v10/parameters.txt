@@ -1,0 +1,11 @@
+R_teeth: 30
+P_teeth: 12
+S_teeth: 6
+N_planets: 3
+b_profile: 0.2
+helix_angle_deg: 20.0
+ring_offset_deg: -1.37
+carrier_radius_mm: 20.74960006443421
+planet_outer_r_mm: 14.250781925797138
+ring_inner_r_mm: 32.73825787944063
+sun_outer_r_mm: 8.760942249427776

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QDD Gearbox Actuator — Aaron Evans</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #080808; color: #fff;
+    overflow: hidden; height: 100vh; width: 100vw;
+  }
+
+  /* ===== NAV ===== */
+  .nav {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 28px;
+  }
+  .nav .name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); letter-spacing: 0.02em; }
+  .nav .links a { font-size: 12px; color: rgba(255,255,255,0.3); text-decoration: none; margin-left: 16px; }
+  .nav .links a:hover { color: rgba(255,255,255,0.7); }
+
+  /* ===== LAYOUT ===== */
+  .page { height: 100vh; display: flex; }
+
+  /* ===== LEFT PANEL (thumbnails) ===== */
+  .side-panel {
+    width: 110px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; gap: 10px;
+    padding: 60px 10px 20px; z-index: 10; flex-shrink: 0;
+  }
+  .side-panel.right { order: 3; }
+
+  .thumb {
+    width: 88px; height: 68px; border-radius: 6px; overflow: hidden;
+    background: #1a1a1a; border: 2px solid rgba(255,255,255,0.06);
+    cursor: pointer; position: relative;
+    transition: all 0.25s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb:hover { border-color: rgba(255,255,255,0.25); transform: scale(1.06); }
+  .thumb.active { border-color: rgba(126,201,157,0.6); box-shadow: 0 0 12px rgba(126,201,157,0.15); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb .th-ph {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #555;
+  }
+  .thumb .th-label {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 3px 6px;
+    background: rgba(0,0,0,0.75); font-size: 8px; font-weight: 600;
+    color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.06em;
+    text-align: center;
+  }
+  .thumb.active .th-label { color: #7ec99d; }
+
+  /* Dashed thumb (coming soon) */
+  .thumb.dashed { background: transparent; border: 2px dashed rgba(255,255,255,0.1); }
+  .thumb.dashed .th-ph { color: #333; font-size: 12px; }
+  .thumb.dashed:hover { border-color: rgba(255,255,255,0.15); }
+
+  /* Pulse hint animation on load */
+  @keyframes pulse-hint {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(126,201,157,0); }
+    50% { box-shadow: 0 0 8px 2px rgba(126,201,157,0.2); }
+  }
+  .thumb.hint { animation: pulse-hint 2s ease-in-out 3; }
+
+  /* ===== CENTER STAGE ===== */
+  .center-stage {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    align-items: center; padding: 60px 24px 20px; position: relative; order: 2;
+  }
+
+  /* Center display area */
+  .display {
+    width: 100%; max-width: 720px; flex: 1;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: relative;
+  }
+
+  /* ===== DEFAULT VIEW (hero) ===== */
+  .view { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; }
+  .view.active { display: flex; }
+
+  .hero-view {
+    text-align: center;
+  }
+  .hero-view .hero-img {
+    width: 100%; max-width: 620px; height: 340px; background: #111; border-radius: 6px;
+    margin: 0 auto; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-view .hero-img img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-view .hero-img .ph { color: #333; font-size: 13px; font-style: italic; }
+  .hero-view h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; margin-top: 20px; }
+  .hero-view .tagline { font-size: 15px; color: rgba(255,255,255,0.45); margin-top: 6px; }
+  .hero-view .explore-hint {
+    margin-top: 16px; font-size: 12px; color: rgba(255,255,255,0.25);
+    display: flex; align-items: center; gap: 6px;
+  }
+  @keyframes bounce-lr {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
+  }
+  .hero-view .arrow-hint { animation: bounce-lr 1.5s ease-in-out infinite; display: inline-block; }
+
+  /* ===== CONTENT VIEW (when a section is clicked) ===== */
+  .content-view {
+    width: 100%; max-width: 620px;
+  }
+  .cv-header { margin-bottom: 16px; }
+  .cv-tag { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; }
+  .cv-title { font-size: 24px; font-weight: 700; margin-top: 2px; }
+  .cv-desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; margin-top: 6px; }
+
+  .cv-image {
+    width: 100%; height: 280px; background: #111; border-radius: 6px;
+    overflow: hidden; margin: 16px 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cv-image img { width: 100%; height: 100%; object-fit: cover; }
+  .cv-image .ph { color: #333; font-size: 13px; font-style: italic; }
+
+  .cv-detail { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .cv-detail table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  .cv-detail th { text-align: left; padding: 5px 8px; border-bottom: 1px solid #222; color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 500; }
+  .cv-detail td { padding: 5px 8px; border-bottom: 1px solid #151515; font-size: 12px; color: #aaa; }
+  .cv-detail tr.w td { color: #7ec99d; font-weight: 600; }
+  .cv-detail ul { padding-left: 18px; margin: 6px 0; }
+  .cv-detail li { margin-bottom: 3px; font-size: 12px; }
+
+  .cv-jump {
+    display: inline-block; margin-top: 12px; font-size: 11px;
+    color: #7ec99d; font-weight: 600; text-decoration: none;
+    border: 1px solid rgba(126,201,157,0.3); border-radius: 4px;
+    padding: 6px 14px; transition: all 0.2s;
+  }
+  .cv-jump:hover { background: rgba(126,201,157,0.1); border-color: rgba(126,201,157,0.5); }
+
+  /* ===== SPECS BAR (bottom) ===== */
+  .bottom-bar {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 10;
+    display: flex; gap: 28px; align-items: center;
+    background: rgba(255,255,255,0.03); backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.05); border-radius: 6px;
+    padding: 8px 24px;
+  }
+  .bb-item { text-align: center; }
+  .bb-item .bv { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.7); }
+  .bb-item .bl { font-size: 7px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.08em; }
+  .bb-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.06); }
+
+  /* ===== TIMELINE (top center) ===== */
+  .timeline {
+    position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10;
+    display: flex; gap: 12px; align-items: center;
+    font-size: 9px; font-weight: 600;
+  }
+  .tl-d { color: rgba(255,255,255,0.35); }
+  .tl-n { color: #b08d2a; }
+  .tl-f { color: rgba(255,255,255,0.15); }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="name">Aaron Evans</span>
+  <div class="links"><a href="#">Home</a><a href="#">About</a><a href="#">Projects</a></div>
+</div>
+
+<div class="timeline">
+  <span class="tl-d">&#9679; Design</span>
+  <span class="tl-d">&#9679; CAD</span>
+  <span class="tl-d">&#9679; Calibration</span>
+  <span class="tl-d">&#9679; Rev 00A</span>
+  <span class="tl-n">&#9679; Rev 00B</span>
+  <span class="tl-f">&#9675; GD&T</span>
+  <span class="tl-f">&#9675; Controls</span>
+</div>
+
+<div class="page">
+
+  <!-- LEFT THUMBNAILS -->
+  <div class="side-panel left">
+    <div class="thumb hint" data-view="trade" onclick="showView('trade')">
+      <div class="th-ph">&#9881;</div>
+      <div class="th-label">Trade Studies</div>
+    </div>
+    <div class="thumb hint" data-view="cad" onclick="showView('cad')">
+      <div class="th-ph">&#9633;</div>
+      <div class="th-label">CATIA V6</div>
+    </div>
+    <div class="thumb" data-view="dfm" onclick="showView('dfm')">
+      <div class="th-ph">&#8982;</div>
+      <div class="th-label">Tolerancing</div>
+    </div>
+    <div class="thumb" data-view="progress" onclick="showView('progress')">
+      <div class="th-ph">&#8644;</div>
+      <div class="th-label">Before/After</div>
+    </div>
+  </div>
+
+  <!-- CENTER STAGE -->
+  <div class="center-stage">
+    <div class="display">
+
+      <!-- DEFAULT: Hero view -->
+      <div class="view hero-view active" id="view-hero">
+        <div class="hero-img"><div class="ph">[ Assembled prototype or CATIA cross-section ]</div></div>
+        <h1>QDD Gearbox Actuator</h1>
+        <div class="tagline">3D-printed 5:1 planetary gearbox designed for backdrivability</div>
+        <div class="explore-hint">Explore sections <span class="arrow-hint">&#8594;</span></div>
+      </div>
+
+      <!-- TRADE STUDIES -->
+      <div class="view content-view" id="view-trade">
+        <div class="cv-header">
+          <div class="cv-tag">Design Decisions</div>
+          <div class="cv-title">Weighted Trade Studies</div>
+          <div class="cv-desc">Every major decision quantified. 6 gear concepts, 7 weighted criteria.</div>
+        </div>
+        <div class="cv-image"><div class="ph">[ Trade study matrix visual / gear concept comparison ]</div></div>
+        <div class="cv-detail">
+          <table>
+            <tr><th>Concept</th><th>Cost (.20)</th><th>Transparency (.15)</th><th>DFM (.15)</th><th>Total</th></tr>
+            <tr class="w"><td>Planetary</td><td>5</td><td>4</td><td>4</td><td>4.40</td></tr>
+            <tr><td>Sequential</td><td>4.5</td><td>4</td><td>4</td><td>4.05</td></tr>
+            <tr><td>Drive Belt</td><td>3.5</td><td>5</td><td>4</td><td>3.98</td></tr>
+            <tr><td>Cycloidal</td><td>3</td><td>3.5</td><td>3</td><td>3.73</td></tr>
+          </table>
+          <p>5:1 ratio (4.83/5). Ball bearings on cost-dominant weighting. Key insight: interface failure > gearbox failure.</p>
+        </div>
+        <a href="#" class="cv-jump">Full details &#8595;</a>
+      </div>
+
+      <!-- CAD -->
+      <div class="view content-view" id="view-cad">
+        <div class="cv-header">
+          <div class="cv-tag">CAD Architecture</div>
+          <div class="cv-title">CATIA V6 Parametric Design</div>
+          <div class="cv-desc">~60-80 hours learning from scratch. Skeleton-driven -- every part reads from a single source of truth.</div>
+        </div>
+        <div class="cv-image"><div class="ph">[ CATIA: full assembly cross-section with gear mesh visible ]</div></div>
+        <div class="cv-detail">
+          <ul>
+            <li><strong>Single source of truth</strong> -- all positioning in master skeleton</li>
+            <li><strong>No B-Rep references</strong> -- sketch on planes, reference wireframe only</li>
+            <li><strong>Body-level patterning</strong> -- more stable than feature-level</li>
+            <li><strong>Chain-of-zeros</strong> -- zero offsets at every hierarchy level</li>
+            <li><strong>Placeholder gears</strong> -- geometric contracts, real teeth swap in</li>
+          </ul>
+        </div>
+        <a href="#" class="cv-jump">Full details &#8595;</a>
+      </div>
+
+      <!-- DFM -->
+      <div class="view content-view" id="view-dfm">
+        <div class="cv-header">
+          <div class="cv-tag">Manufacturing</div>
+          <div class="cv-title">FDM Tolerancing & Calibration</div>
+          <div class="cv-desc">ISO fit intent translated to FDM offsets. Calibration coupons validate every interface.</div>
+        </div>
+        <div class="cv-image"><div class="ph">[ Calibration coupon sketch + photo of printed coupon with calipers ]</div></div>
+        <div class="cv-detail">
+          <table>
+            <tr><th>Interface</th><th>Offset</th><th>Status</th></tr>
+            <tr><td>Main bearing bore</td><td>+0.10mm</td><td>Validated</td></tr>
+            <tr><td>Carrier bearing bore</td><td>+0.10mm</td><td>Applied</td></tr>
+            <tr><td>Planet bearing bore</td><td>+0.15mm</td><td>Pending</td></tr>
+            <tr><td>Ring-to-housing</td><td>+0.30mm</td><td>Applied</td></tr>
+          </table>
+          <p>All bearing interfaces: finger-press transition fits. Self-tap validated M3-M5.</p>
+        </div>
+        <a href="#" class="cv-jump">Full details &#8595;</a>
+      </div>
+
+      <!-- BEFORE/AFTER -->
+      <div class="view content-view" id="view-progress">
+        <div class="cv-header">
+          <div class="cv-tag">Learning</div>
+          <div class="cv-title">CAD Progression</div>
+          <div class="cv-desc">First model vs final parametric assembly. No prior CATIA experience.</div>
+        </div>
+        <div class="cv-image"><div class="ph">[ Side-by-side: early model vs skeleton-driven final assembly ]</div></div>
+        <div class="cv-detail">
+          <p>Left: first attempt -- no skeleton, no constraints, manual positioning. Right: fully parametric with cutting bodies, skeleton refs, and chain-of-zeros. Same project, 60+ hours of learning apart.</p>
+        </div>
+        <a href="#" class="cv-jump">Full details &#8595;</a>
+      </div>
+
+      <!-- PROTOTYPE -->
+      <div class="view content-view" id="view-proto">
+        <div class="cv-header">
+          <div class="cv-tag">Prototype</div>
+          <div class="cv-title">Rev 00A Build</div>
+          <div class="cv-desc">First physical prototype. Bambu P1S, PLA, off-the-shelf bearings and shoulder screws.</div>
+        </div>
+        <div class="cv-image"><div class="ph">[ Photo: assembled prototype ]</div></div>
+        <div class="cv-detail">
+          <p>Full assembly built and tested. Bearing fits validated, offsets calibrated. 5 issues identified through structured testing. 13 design changes scoped for Rev 00B.</p>
+        </div>
+        <a href="#" class="cv-jump">Full details &#8595;</a>
+      </div>
+
+      <!-- TESTING -->
+      <div class="view content-view" id="view-testing">
+        <div class="cv-header">
+          <div class="cv-tag">Validation</div>
+          <div class="cv-title">Structured Testing</div>
+          <div class="cv-desc">5 tests. Unknowns register, dependency mapping, requirements traceability.</div>
+        </div>
+        <div class="cv-image"><div class="ph">[ Photo: test setup / annotated results ]</div></div>
+        <div class="cv-detail">
+          <table>
+            <tr><th>Test</th><th>Finding</th><th>Action</th></tr>
+            <tr><td>T-001 Gear mesh</td><td>Herringbone misalign</td><td>Switch to spur</td></tr>
+            <tr><td>T-002 Lid drag</td><td>Over-constraint</td><td>Decouple lid</td></tr>
+            <tr><td>T-003 Shoulder</td><td>Print artifact</td><td>Reorient print</td></tr>
+            <tr><td>T-004 Indexing</td><td>No load path</td><td>No change</td></tr>
+            <tr><td>T-005 Bolt torque</td><td>Marginal</td><td>Shoulder redesign</td></tr>
+          </table>
+        </div>
+        <a href="#" class="cv-jump">Full details &#8595;</a>
+      </div>
+
+      <!-- GD&T -->
+      <div class="view content-view" id="view-gdt">
+        <div class="cv-header">
+          <div class="cv-tag">Coming Soon</div>
+          <div class="cv-title">GD&T & Engineering Drawings</div>
+          <div class="cv-desc">Formal tolerance callouts, datum schemes, and quantitative stack-up analysis.</div>
+        </div>
+        <div class="cv-image" style="border: 2px dashed #222; background: transparent;"><div class="ph" style="color:#333;">[ Engineering drawings with GD&T callouts ]</div></div>
+        <div class="cv-detail">
+          <p>Housing bearing bores, carrier pin holes, gear tooth runout. Datum A/B/C scheme. Worst-case and statistical tolerance stacks across critical load paths.</p>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="view content-view" id="view-controls">
+        <div class="cv-header">
+          <div class="cv-tag">Coming Soon</div>
+          <div class="cv-title">Controls & Motor Integration</div>
+          <div class="cv-desc">ODrive S1 controller, impedance control, backdrivability characterization.</div>
+        </div>
+        <div class="cv-image" style="border: 2px dashed #222; background: transparent;"><div class="ph" style="color:#333;">[ Control loop graphs, step response, impedance data ]</div></div>
+        <div class="cv-detail">
+          <p>D6374 BLDC motor. Position/velocity/current cascaded loops. Variable stiffness and damping. Backdrivability measured against CubeMars AK70-10 benchmark (&lt; 1 Nm friction).</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT THUMBNAILS -->
+  <div class="side-panel right">
+    <div class="thumb hint" data-view="proto" onclick="showView('proto')">
+      <div class="th-ph">&#9881;</div>
+      <div class="th-label">Prototype</div>
+    </div>
+    <div class="thumb hint" data-view="testing" onclick="showView('testing')">
+      <div class="th-ph">&#10003;</div>
+      <div class="th-label">Testing</div>
+    </div>
+    <div class="thumb dashed" data-view="gdt" onclick="showView('gdt')">
+      <div class="th-ph">GD&T</div>
+      <div class="th-label">Drawings</div>
+    </div>
+    <div class="thumb dashed" data-view="controls" onclick="showView('controls')">
+      <div class="th-ph">&#8635;</div>
+      <div class="th-label">Controls</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <div class="bb-item"><div class="bv">5:1</div><div class="bl">Ratio</div></div>
+  <div class="bb-divider"></div>
+  <div class="bb-item"><div class="bv">&le;0.5&deg;</div><div class="bl">Backlash</div></div>
+  <div class="bb-divider"></div>
+  <div class="bb-item"><div class="bv">16 Nm</div><div class="bl">Peak Torque</div></div>
+  <div class="bb-divider"></div>
+  <div class="bb-item"><div class="bv">&lt;$120</div><div class="bl">Budget</div></div>
+  <div class="bb-divider"></div>
+  <div class="bb-item"><div class="bv">5</div><div class="bl">Tests</div></div>
+  <div class="bb-divider"></div>
+  <div class="bb-item"><div class="bv">13</div><div class="bl">Changes</div></div>
+  <div class="bb-divider"></div>
+  <div class="bb-item"><div class="bv">60-80h</div><div class="bl">CATIA</div></div>
+</div>
+
+<script>
+function showView(id) {
+  // Hide all views
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  // Show target
+  const target = document.getElementById('view-' + id);
+  if (target) target.classList.add('active');
+  // Update thumb active states
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  const activeThumb = document.querySelector('.thumb[data-view="' + id + '"]');
+  if (activeThumb) activeThumb.classList.add('active');
+}
+
+// Click center to return to hero
+document.querySelector('.display').addEventListener('click', function(e) {
+  if (e.target.closest('.cv-jump') || e.target.closest('.cv-detail') || e.target.closest('.cv-image')) return;
+  // Only reset if clicking empty space
+});
+
+// ESC to return to hero
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-hero').classList.add('active');
+    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  }
+});
+</script>
+
+</body>
+</html>

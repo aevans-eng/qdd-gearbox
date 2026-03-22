@@ -1,0 +1,79 @@
+/* Override table of contents menu item styles to mimic menu sections */
+
+
+pre.literal-block {
+    background-color: transparent;
+
+}
+pre.literal-block a {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+button.copybtn.o-tooltip--left:hover {
+    opacity: 1;
+}
+
+/* Override code block caption (otherwise looks like a caption on a figure) */
+.rst-content .code-block-caption {
+    background: #d8d8d8;
+    color: #828282;
+    font-family: monospace;
+    font-style: normal;
+    padding: 5px 10px;
+    font-size: 70%;
+    text-align: start;
+}
+
+.rst-content div[class^=highlight] {
+    margin-bottom: 5px
+}
+
+.literal-block-wrapper {
+    padding-right: 0px; /* override setting from theme for ".container" */
+    padding-left: 0px; /* override setting from theme for ".container" */
+}
+
+/* API docs ------------------------------------------------------------------*/
+
+/* Prevent member names from taking up full width to allow for chips next to it */
+.rst-content dl.py>dt.sig.sig-object {
+    display: inline-table !important;
+}
+
+/* Chips next to function/attribute name to indicate certain properties (read-only, read-write, experimental) */
+/* Emitted as part of customized py:attribute and py:method directives */
+.rst-content .odrv-chip {
+    font-size: .75em;
+    color: #686868;
+    border: 1px solid;
+    border-color: #bcbcbc;
+    border-radius: .5em;
+    padding: .15em .4em;
+    line-height: normal;
+    margin-left: 0.5em;
+}
+
+.rst-content .odrv-chip-readonly { background: #f5f5f5; }
+.rst-content .odrv-chip-readwrite { background: #eefced; }
+.rst-content .odrv-chip-experimental { background: #fff1c5; }
+
+/* Attribute-info table that shows additional info for member functions/attributes */
+/* Emitted by custom odrv-attr-info directive */
+.rst-content dl.odrv-attr-info {
+    margin-bottom: 0 !important;
+}
+.rst-content dl.odrv-attr-info > dd {
+    width: fit-content; /* shrink to fit longest line */
+    max-width: 100%; /* but don't exceed parent width */
+}
+
+/* Code blocks for expanded paths: smaller than regular code blocks and no scroll */
+/* Emitted as part of custom odrv-attr-info directive */
+.rst-content .odrv-paths-list div[class^=highlight] {
+    overflow: visible;
+}
+.rst-content .odrv-paths-list pre {
+    padding: 5px !important;
+    font-size: 10px !important;
+}

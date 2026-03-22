@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 1 — Card Grid</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; }
+
+  /* Hero */
+  .hero { padding: 80px 60px 60px; max-width: 1200px; margin: 0 auto; }
+  .hero h1 { font-size: 3rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .hero .subtitle { font-size: 1.1rem; color: #888; margin-bottom: 32px; }
+  .specs-bar { display: flex; gap: 32px; flex-wrap: wrap; }
+  .spec { border-left: 2px solid #333; padding-left: 12px; }
+  .spec .value { font-size: 1.4rem; font-weight: 600; color: #fff; }
+  .spec .label { font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Cards Grid */
+  .grid { max-width: 1200px; margin: 0 auto; padding: 0 60px 80px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+
+  .card {
+    background: #141414; border: 1px solid #222; border-radius: 12px;
+    padding: 28px; cursor: pointer; transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+  .card:hover { border-color: #444; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+  .card .tag { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: #666; margin-bottom: 10px; }
+  .card h3 { font-size: 1.15rem; font-weight: 600; color: #fff; margin-bottom: 10px; }
+  .card .preview { font-size: 0.85rem; color: #888; line-height: 1.6; }
+  .card .detail { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .card.open .detail { max-height: 800px; }
+  .card .detail-inner { padding-top: 16px; margin-top: 16px; border-top: 1px solid #222; font-size: 0.85rem; color: #aaa; line-height: 1.7; }
+  .card .expand-hint { position: absolute; bottom: 12px; right: 16px; font-size: 0.7rem; color: #444; }
+  .card.open .expand-hint { display: none; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.8rem; }
+  th { text-align: left; color: #666; padding: 6px 8px; border-bottom: 1px solid #222; font-weight: 500; }
+  td { padding: 6px 8px; border-bottom: 1px solid #1a1a1a; }
+  td:first-child { color: #ccc; }
+  tr.winner td { color: #4ade80; font-weight: 600; }
+
+  .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .status-active { background: #1a3a1a; color: #4ade80; }
+  .status-next { background: #3a2a1a; color: #fbbf24; }
+
+  /* Timeline bar */
+  .timeline { max-width: 1200px; margin: 0 auto; padding: 0 60px 40px; }
+  .timeline h2 { font-size: 1rem; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+  .tl-track { display: flex; gap: 0; position: relative; overflow-x: auto; padding-bottom: 12px; }
+  .tl-item { flex: 1; min-width: 120px; text-align: center; position: relative; }
+  .tl-item::before { content: ''; position: absolute; top: 6px; left: 0; right: 0; height: 2px; background: #222; }
+  .tl-item::after { content: ''; width: 10px; height: 10px; background: #333; border-radius: 50%; position: absolute; top: 1px; left: 50%; transform: translateX(-50%); z-index: 1; }
+  .tl-item.done::after { background: #4ade80; }
+  .tl-item.current::after { background: #fbbf24; box-shadow: 0 0 8px rgba(251,191,36,0.4); }
+  .tl-date { font-size: 0.65rem; color: #555; margin-top: 20px; }
+  .tl-label { font-size: 0.72rem; color: #999; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>QDD Gearbox Actuator</h1>
+  <p class="subtitle">A 3D-printed quasi-direct-drive planetary gearbox for robotic actuators</p>
+  <div class="specs-bar">
+    <div class="spec"><div class="value">5:1</div><div class="label">Gear Ratio</div></div>
+    <div class="spec"><div class="value">&le; 0.5&deg;</div><div class="label">Backlash Target</div></div>
+    <div class="spec"><div class="value">16 Nm</div><div class="label">Peak Torque</div></div>
+    <div class="spec"><div class="value">&lt; $120</div><div class="label">Budget</div></div>
+    <div class="spec"><div class="value">FDM</div><div class="label">Manufacturing</div></div>
+    <div class="spec"><div class="value">&gt; 90%</div><div class="label">Efficiency Target</div></div>
+  </div>
+</div>
+
+<div class="timeline">
+  <h2>Progress</h2>
+  <div class="tl-track">
+    <div class="tl-item done"><div class="tl-date">Jan 4</div><div class="tl-label">Design Sprint</div></div>
+    <div class="tl-item done"><div class="tl-date">Feb 14</div><div class="tl-label">Detailed CAD</div></div>
+    <div class="tl-item done"><div class="tl-date">Feb 19</div><div class="tl-label">Calibration</div></div>
+    <div class="tl-item done"><div class="tl-date">Mar 1</div><div class="tl-label">Gear Integration</div></div>
+    <div class="tl-item done"><div class="tl-date">Mar 13</div><div class="tl-label">Rev 00A Testing</div></div>
+    <div class="tl-item current"><div class="tl-date">Now</div><div class="tl-label">Rev 00B CAD</div></div>
+    <div class="tl-item"><div class="tl-date">Next</div><div class="tl-label">Print & Test</div></div>
+    <div class="tl-item"><div class="tl-date">Future</div><div class="tl-label">Controls</div></div>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- Trade Studies -->
+  <div class="card" onclick="this.classList.toggle('open')">
+    <div class="tag">Design Decisions</div>
+    <h3>Trade Studies</h3>
+    <p class="preview">Weighted Pugh matrices for gear type, ratio, and bearing selection. Planetary won at 4.40/5.</p>
+    <div class="detail"><div class="detail-inner">
+      <strong>Gear Type Selection</strong>
+      <table>
+        <tr><th>Concept</th><th>Score</th></tr>
+        <tr class="winner"><td>Planetary</td><td>4.40</td></tr>
+        <tr><td>Sequential</td><td>4.05</td></tr>
+        <tr><td>Drive Belt</td><td>3.98</td></tr>
+        <tr><td>Cycloidal</td><td>3.73</td></tr>
+      </table>
+      <p>Scored across 7 weighted criteria: cost, transparency, torque density, precision, DFM, efficiency, durability. Planetary dominated in cost + durability + printability.</p>
+      <br>
+      <strong>Ratio: 5:1</strong> (4.83/5) — best transparency-torque compromise.<br>
+      <strong>Bearings: Ball</strong> (4.05/5) — cost-dominant weighting for prototype budget.
+    </div></div>
+    <span class="expand-hint">click to expand</span>
+  </div>
+
+  <!-- CATIA -->
+  <div class="card" onclick="this.classList.toggle('open')">
+    <div class="tag">CAD Architecture</div>
+    <h3>CATIA V6 Parametric Design</h3>
+    <p class="preview">Skeleton-driven assembly where every part reads from a single source of truth. ~60-80 hours learning from scratch.</p>
+    <div class="detail"><div class="detail-inner">
+      <p><strong>Core principles:</strong></p>
+      <ul style="padding-left:18px; margin: 8px 0;">
+        <li>All positioning in master skeleton — parts never reference each other</li>
+        <li>No B-Rep references (edges/faces break on reorder)</li>
+        <li>Body-level patterning for stability</li>
+        <li>Placeholder gears as geometric contracts — real teeth swap in</li>
+      </ul>
+      <p style="margin-top:10px;">Chain-of-zeros positioning: skeleton at origin, sub-assemblies constrained to skeleton midplane, parts to sub-assembly origin. Zero offsets everywhere.</p>
+      <p style="margin-top:10px; color:#666; font-style:italic;">[CAD screenshots would go here]</p>
+    </div></div>
+    <span class="expand-hint">click to expand</span>
+  </div>
+
+  <!-- Tolerancing -->
+  <div class="card" onclick="this.classList.toggle('open')">
+    <div class="tag">DFM</div>
+    <h3>FDM Tolerancing & Calibration</h3>
+    <p class="preview">ISO fit intent translated to FDM offsets. Calibration coupons validate every bearing interface before the full build.</p>
+    <div class="detail"><div class="detail-inner">
+      <p>All bearing interfaces target <strong>finger-press transition fit</strong> — FDM surface texture provides grip, so press fits aren't needed for a backdrivable actuator.</p>
+      <table>
+        <tr><th>Interface</th><th>Offset</th><th>Status</th></tr>
+        <tr><td>Main bearing bore</td><td>+0.10mm</td><td>Validated</td></tr>
+        <tr><td>Carrier bearing bore</td><td>+0.10mm</td><td>Applied</td></tr>
+        <tr><td>Planet bearing bore</td><td>+0.15mm</td><td>Pending</td></tr>
+        <tr><td>Ring-to-housing</td><td>+0.30mm</td><td>Applied</td></tr>
+      </table>
+      <p style="margin-top:8px;">Self-tapping validated: M3=2.6mm, M4=3.6mm, M5=4.6mm pilots. Simpler than heat inserts for prototyping.</p>
+    </div></div>
+    <span class="expand-hint">click to expand</span>
+  </div>
+
+  <!-- Testing -->
+  <div class="card" onclick="this.classList.toggle('open')">
+    <div class="tag">Validation</div>
+    <h3>Structured Testing</h3>
+    <p class="preview">5 tests with root cause analysis, unknowns register, and requirements traceability. Not just pass/fail.</p>
+    <div class="detail"><div class="detail-inner">
+      <table>
+        <tr><th>Test</th><th>Finding</th><th>Action</th></tr>
+        <tr><td>T-001 Gear mesh</td><td>Herringbone misalignment</td><td>Switch to spur</td></tr>
+        <tr><td>T-002 Lid drag</td><td>Over-constraint</td><td>Decouple lid</td></tr>
+        <tr><td>T-003 Shoulder</td><td>Print artifact</td><td>Reorient print</td></tr>
+        <tr><td>T-004 Indexing</td><td>No load path</td><td>No change needed</td></tr>
+        <tr><td>T-005 Bolt torque</td><td>Marginal fail</td><td>Shoulder redesign</td></tr>
+      </table>
+      <p style="margin-top:8px;">Each unknown is scored by risk x uncertainty. Tests resolve bottom-up: component, interface, subsystem, system.</p>
+    </div></div>
+    <span class="expand-hint">click to expand</span>
+  </div>
+
+  <!-- Prototyping -->
+  <div class="card" onclick="this.classList.toggle('open')">
+    <div class="tag">Iteration</div>
+    <h3>Rev 00A &rarr; Rev 00B</h3>
+    <p class="preview">First prototype built, tested, and 13 design changes scoped for the next revision based on test data.</p>
+    <div class="detail"><div class="detail-inner">
+      <p><strong>Rev 00B must-haves (from test data):</strong></p>
+      <ul style="padding-left:18px; margin: 8px 0;">
+        <li>Spur gears (eliminates herringbone assembly error)</li>
+        <li>Larger output shaft + bearing</li>
+        <li>Fix planet bearing shoulder print quality</li>
+        <li>Decouple lid constraint from carrier</li>
+        <li>Self-tap threads (drop heat inserts)</li>
+      </ul>
+      <p style="margin-top:10px; color:#666; font-style:italic;">[Prototype photos would go here]</p>
+    </div></div>
+    <span class="expand-hint">click to expand</span>
+  </div>
+
+  <!-- Future -->
+  <div class="card" style="border-style: dashed;">
+    <div class="tag">Coming Soon</div>
+    <h3>Controls & Motor Integration</h3>
+    <p class="preview">ODrive controller, impedance control tuning, backdrivability measurement. In progress.</p>
+  </div>
+</div>
+
+</body>
+</html>

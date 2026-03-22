@@ -2,7 +2,7 @@
 
 > **Date:** 2026-03-20
 > **Status:** Design approved
-> **Goal:** Get Aaron interview-ready on QDD/actuator first principles within 4 weeks
+> **Goal:** Get Aaron interview-ready on QDD/actuator first principles by May 15, interleaving learning with project execution
 > **Supersedes:** `2026-03-20-qdd-learning-system-design.md` (v1 was workbook-only, no teaching step)
 
 ---
@@ -130,26 +130,38 @@ Aaron can do multiple steps per session or stop after any step. Typical session 
 
 ### Unlock System
 
-Real-world milestones gated by actual knowledge acquisition:
+Real-world milestones gated by knowledge acquisition and project deliverables. Tiered by urgency:
 
-| Milestone | Unlock | Why it's gated |
-|-----------|--------|---------------|
-| Topics 01-02 complete | Update resume with "BLDC motor characterization" | Can now defend it in interview |
-| Topics 01-05 complete | Start test campaign (Phases 0-1) | Need this knowledge to interpret test data |
-| Topics 01-05 + test data | Write first-principles explainer for portfolio | Have both theory and data |
-| Topics 06-07 complete | Post on LinkedIn about testing methodology | Can speak with technical depth |
-| Topics 08-09 complete | Message Tesla contacts about impedance control | Can hold a real technical conversation |
-| Topics 08-09 + demo | Add impedance control demo to portfolio | Real demo backed by real understanding |
-| All 13 complete | Full interview-ready — reach out to recruiters | Can handle any first-principles question |
+**Tier 1 — Immediate / Application Window (Mar-Apr):**
+
+| Key | Unlock | Requirements | Target |
+|-----|--------|-------------|--------|
+| `message_tesla_intro` | First outreach (Francis & Onur) | NONE | Mar 23 |
+| `resume_update` | Update resume with motor characterization data | 01, 02 + cycle1_data | Mar 26 |
+| `application_v1` | **Submit first application draft** | 01-05 + test_data_collected | Apr 5 |
+| `followup_tesla_technical` | Technical follow-up to Francis/Onur with test results | 01-05 + test_data_collected | Apr 7 |
+| `test_campaign` | Start formal test campaign | 01-05 | Apr 7 |
+
+**Tier 2 — Post-Exams / Depth (Apr-May):**
+
+| Key | Unlock | Requirements | Target |
+|-----|--------|-------------|--------|
+| `message_tesla_testing` | Message test engineers (Kushan, Mohamed) | 06, 07 + test_data_collected | Apr 28 |
+| `linkedin_post` | LinkedIn post with test results | 01-07 + test_data_collected | May 1 |
+| `message_tesla_gated` | Message gated contacts (Aarjav, Hazem) | 01-07 + test_data_collected | May 1 |
+| `portfolio_explainer` | First-principles explainer for portfolio | 01-05 + test_data_collected | May 3 |
+| `portfolio_demo` | Impedance control demo for portfolio | 08, 09 + impedance_demo_done | May 10 |
+| `message_tesla_senior` | Senior contacts (Dinka, Lascaris) | 01-09 + test_data_collected | May 10 |
+| `interview_ready` | Full interview-ready | 01-13 | May 15 |
 
 Dashboard shows unlock progress:
 ```
 UNLOCKS
-  Update resume .............. 2/2 topics — READY
-  Start test campaign ........ 4/5 topics
-  LinkedIn post .............. 4/7 topics
-  Message Tesla contacts ..... 4/9 topics
-  Interview-ready ............ 4/13 topics
+  First outreach ............. UNLOCKED
+  Update resume .............. 0/2 topics (needs: 01,02 + cycle1_data)
+  Application v1 ............. 0/5 topics (needs: 01-05 + test_data)
+  Test campaign .............. 0/5 topics
+  Interview-ready ............ 0/13 topics
 ```
 
 ### Streak Mechanics
@@ -183,6 +195,31 @@ Topics that share physics foundations are taught together to reduce context-swit
 | D | 06 (Measurement & Instrumentation) + 07 (Testing Methodology) | How to measure and how to structure tests |
 
 Topics 08-13 are taught individually (more complex, more independent).
+
+### Learn → Apply Cycles
+
+Instead of marching through all 13 topics then starting tests, interleave learning with project execution. Each cycle produces test data, a writeup, and something concrete for the Tesla application.
+
+| Cycle | Learn | Apply (Deliverable) | Timeline |
+|-------|-------|---------------------|----------|
+| 1 | 01+02 (nearly done) | Motor characterization: no-load speed, Kt verification, torque-speed mapping | Mar 22-25 |
+| 2 | 03 Thermal | Thermal test: stall heating, steady-state temp at load points | Mar 26-27 |
+| 3 | 04+05 Friction & Gearbox | Friction test: no-load Iq at multiple speeds, backdrivability check, efficiency estimate | Mar 28-Apr 1 |
+| 4 | 06+07 Measurement & Testing | Document test methodology, write up results from cycles 1-3 | Apr 2-7 |
+| -- | EXAM FOCUS | (minimal project work) | Apr 8-22 |
+| 5 | 08+09 Dynamics & Impedance | System ID, impedance control demo | Apr 23-May 1 |
+| 6 | 10-13 Breadth | Portfolio polish, interview prep | May 1-15 |
+
+After distill completes for a project topic, the system prompts: "Ready to apply this? Here's the test you can run now." Practice/grade/drill can happen before or after the test.
+
+### Priority Tiers
+
+Topics are tagged by priority to focus effort where it matters most:
+- **PROJECT** (01-07): Needed for test campaign and application. Do these first.
+- **INTERVIEW** (08-09): Dynamics and impedance control. Interview differentiators.
+- **BREADTH** (10-13): GD&T, DFM, FEA, backlash. Important but lower urgency.
+
+The dashboard mission picker selects by tier (PROJECT > INTERVIEW > BREADTH), then by topic number within a tier.
 
 ### Week 1 Schedule (Topics 01-07: Testing Prerequisites)
 
@@ -224,7 +261,7 @@ All dates use local system time (Aaron's Windows machine, Pacific time).
 
 ```json
 {
-  "target_date": "2026-04-17",
+  "target_date": "2026-05-15",
   "streak": {
     "current": 3,
     "last_activity": "2026-03-20",

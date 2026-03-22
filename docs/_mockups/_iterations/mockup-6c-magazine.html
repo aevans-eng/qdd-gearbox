@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 6C — Magazine Spread</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0a0a0a; color: #fff;
+    overflow: hidden; height: 100vh;
+  }
+
+  /* Full viewport container */
+  .spread {
+    height: 100vh; width: 100vw; position: relative;
+    background: #000;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Central image */
+  .center-image {
+    width: 44vw; height: 70vh; background: #111; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .center-image .ph { color: #333; font-size: 13px; font-style: italic; }
+
+  /* Title overlay on image */
+  .title-block {
+    position: absolute; bottom: 24px; left: 24px; z-index: 2;
+  }
+  .title-block h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .title-block p { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+  /* Floating cards positioned around the image */
+  .float-card {
+    position: absolute; z-index: 5;
+    background: rgba(255,255,255,0.06); backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;
+    padding: 14px 16px; cursor: pointer;
+    transition: all 0.25s ease; max-width: 220px;
+  }
+  .float-card:hover {
+    background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+  .float-card .fc-tag { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.08em; }
+  .float-card h3 { font-size: 14px; font-weight: 700; color: #fff; margin-top: 2px; }
+  .float-card p { font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.4; margin-top: 3px; }
+  .float-card .fc-stat { font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px; }
+
+  /* Hover expand */
+  .float-card .fc-detail {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+  }
+  .float-card:hover .fc-detail { max-height: 120px; }
+  .fc-detail-inner { padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 8px; }
+  .fc-detail-inner p { font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+  .fc-detail-inner .jump { font-size: 10px; color: #7ec99d; font-weight: 600; text-decoration: none; margin-top: 6px; display: inline-block; }
+
+  /* Dashed card (coming soon) */
+  .float-card.dashed { border-style: dashed; border-color: rgba(255,255,255,0.12); }
+  .float-card.dashed h3 { color: rgba(255,255,255,0.4); }
+
+  /* Specs bar at top */
+  .specs-bar {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10;
+    display: flex; gap: 32px;
+    background: rgba(255,255,255,0.04); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.06); border-radius: 6px;
+    padding: 10px 28px;
+  }
+  .sb-item { text-align: center; }
+  .sb-item .sv { font-size: 16px; font-weight: 700; }
+  .sb-item .sl { font-size: 8px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* Nav */
+  .nav-bar {
+    position: absolute; top: 20px; left: 24px; z-index: 10;
+    display: flex; gap: 16px; align-items: center;
+  }
+  .nav-bar .name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); }
+  .nav-bar a { font-size: 12px; color: rgba(255,255,255,0.3); text-decoration: none; }
+  .nav-bar a:hover { color: rgba(255,255,255,0.7); }
+
+  /* Status badge */
+  .status {
+    position: absolute; top: 20px; right: 24px; z-index: 10;
+    font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.4);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .status .dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+
+  /* Timeline at bottom */
+  .timeline {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10;
+    display: flex; gap: 16px; align-items: center;
+    background: rgba(255,255,255,0.04); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.06); border-radius: 6px;
+    padding: 8px 20px;
+  }
+  .tl-item { font-size: 10px; font-weight: 600; }
+  .tl-done { color: rgba(255,255,255,0.5); }
+  .tl-now { color: #b08d2a; }
+  .tl-future { color: rgba(255,255,255,0.2); }
+
+  /* ===== CARD POSITIONS ===== */
+  .fc-trade    { top: 80px;  left: 3vw; }
+  .fc-cad      { top: 240px; left: 2vw; }
+  .fc-dfm      { bottom: 120px; left: 3vw; }
+  .fc-proto    { top: 80px;  right: 3vw; }
+  .fc-testing  { top: 240px; right: 2vw; }
+  .fc-gdt      { bottom: 180px; right: 3vw; }
+  .fc-controls { bottom: 80px; right: 3vw; }
+  .fc-stats    { bottom: 80px; left: 3vw; }
+</style>
+</head>
+<body>
+
+<div class="spread">
+
+  <!-- Nav -->
+  <div class="nav-bar">
+    <span class="name">Aaron Evans</span>
+    <a href="#">Home</a>
+    <a href="#">About</a>
+    <a href="#">Projects</a>
+  </div>
+
+  <!-- Status -->
+  <div class="status"><span class="dot"></span> Active -- Rev 00B in progress</div>
+
+  <!-- Specs bar -->
+  <div class="specs-bar">
+    <div class="sb-item"><div class="sv">5:1</div><div class="sl">Ratio</div></div>
+    <div class="sb-item"><div class="sv">&le;0.5&deg;</div><div class="sl">Backlash</div></div>
+    <div class="sb-item"><div class="sv">16 Nm</div><div class="sl">Peak</div></div>
+    <div class="sb-item"><div class="sv">&lt;$120</div><div class="sl">Budget</div></div>
+    <div class="sb-item"><div class="sv">FDM</div><div class="sl">Printed</div></div>
+    <div class="sb-item"><div class="sv">&gt;90%</div><div class="sl">Efficiency</div></div>
+  </div>
+
+  <!-- Central image -->
+  <div class="center-image">
+    <div class="ph">[ Hero: CATIA cross-section or prototype on black ]</div>
+    <div class="title-block">
+      <h1>QDD Gearbox<br>Actuator</h1>
+      <p>3D-printed planetary gearbox for backdrivable robots</p>
+    </div>
+  </div>
+
+  <!-- LEFT SIDE CARDS -->
+  <div class="float-card fc-trade">
+    <div class="fc-tag">Design</div>
+    <h3>Trade Studies</h3>
+    <p>Planetary 4.40/5. Weighted Pugh matrices.</p>
+    <div class="fc-detail"><div class="fc-detail-inner">
+      <p>6 gear concepts, 7 criteria. 5:1 ratio won at 4.83. Ball bearings on cost-dominant weighting.</p>
+      <a href="#" class="jump">See details &#8595;</a>
+    </div></div>
+  </div>
+
+  <div class="float-card fc-cad">
+    <div class="fc-tag">CAD</div>
+    <h3>CATIA V6</h3>
+    <p>Skeleton-driven parametric design. ~60-80 hrs.</p>
+    <div class="fc-detail"><div class="fc-detail-inner">
+      <p>Single source of truth. No B-Rep refs. Body-level patterning. Chain-of-zeros positioning.</p>
+      <a href="#" class="jump">See details &#8595;</a>
+    </div></div>
+  </div>
+
+  <div class="float-card fc-dfm">
+    <div class="fc-tag">Manufacturing</div>
+    <h3>FDM Tolerancing</h3>
+    <p>Calibration coupons. ISO fits -> FDM offsets.</p>
+    <div class="fc-detail"><div class="fc-detail-inner">
+      <p>Finger-press transition fits. 5 offset parameters. Self-tap M3-M5 validated.</p>
+      <a href="#" class="jump">See details &#8595;</a>
+    </div></div>
+  </div>
+
+  <div class="float-card fc-stats">
+    <div class="fc-tag">By the Numbers</div>
+    <div style="display:flex; gap:16px; margin-top:6px;">
+      <div><div class="fc-stat">5</div><div style="font-size:9px; color:rgba(255,255,255,0.3); text-transform:uppercase;">Tests</div></div>
+      <div><div class="fc-stat">4</div><div style="font-size:9px; color:rgba(255,255,255,0.3); text-transform:uppercase;">Root causes</div></div>
+      <div><div class="fc-stat">13</div><div style="font-size:9px; color:rgba(255,255,255,0.3); text-transform:uppercase;">Changes</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE CARDS -->
+  <div class="float-card fc-proto">
+    <div class="fc-tag">Prototype</div>
+    <h3>Rev 00A Build</h3>
+    <p>Bambu P1S, PLA, off-the-shelf bearings.</p>
+    <div class="fc-detail"><div class="fc-detail-inner">
+      <p>Full assembly built. Fits validated, offsets calibrated, 5 issues identified for structured testing.</p>
+      <a href="#" class="jump">See details &#8595;</a>
+    </div></div>
+  </div>
+
+  <div class="float-card fc-testing">
+    <div class="fc-tag">Validation</div>
+    <h3>Structured Testing</h3>
+    <p>5 tests. Root cause analysis. Traceability.</p>
+    <div class="fc-detail"><div class="fc-detail-inner">
+      <p>Unknowns register + dependency map. Herringbone -> spur. Lid decoupled. Shoulder redesign. 13 changes scoped.</p>
+      <a href="#" class="jump">See details &#8595;</a>
+    </div></div>
+  </div>
+
+  <div class="float-card dashed fc-gdt">
+    <div class="fc-tag">Coming Soon</div>
+    <h3>GD&T & Drawings</h3>
+    <p>Formal tolerance callouts. Stack-ups.</p>
+  </div>
+
+  <div class="float-card dashed fc-controls">
+    <div class="fc-tag">Coming Soon</div>
+    <h3>Controls</h3>
+    <p>ODrive, impedance, backdrivability.</p>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline">
+    <span class="tl-item tl-done">&#9679; Design</span>
+    <span class="tl-item tl-done">&#9679; CAD</span>
+    <span class="tl-item tl-done">&#9679; Calibration</span>
+    <span class="tl-item tl-done">&#9679; Rev 00A</span>
+    <span class="tl-item tl-now">&#9679; Rev 00B</span>
+    <span class="tl-item tl-future">&#9675; GD&T</span>
+    <span class="tl-item tl-future">&#9675; Controls</span>
+  </div>
+
+</div>
+
+</body>
+</html>

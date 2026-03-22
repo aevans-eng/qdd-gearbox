@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 2 — Full-Width Scroll</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #fafafa; color: #1a1a1a; }
+
+  /* Hero — big, bold */
+  .hero {
+    background: #111; color: #fff; padding: 100px 80px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 40%;
+    background: linear-gradient(135deg, transparent 40%, rgba(74,222,128,0.05) 100%);
+  }
+  .hero h1 { font-size: 3.5rem; font-weight: 800; max-width: 600px; line-height: 1.1; }
+  .hero p { font-size: 1.1rem; color: #999; max-width: 500px; margin-top: 16px; line-height: 1.6; }
+  .hero .specs-row { display: flex; gap: 40px; margin-top: 40px; flex-wrap: wrap; }
+  .hero .spec-pill { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 20px; }
+  .hero .spec-pill .val { font-size: 1.3rem; font-weight: 700; }
+  .hero .spec-pill .lbl { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Sections — alternating */
+  .section { padding: 80px; max-width: 1100px; margin: 0 auto; }
+  .section-dark { background: #111; color: #e0e0e0; max-width: 100%; }
+  .section-dark .section-inner { max-width: 1100px; margin: 0 auto; padding: 80px; }
+  .section h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; color: #999; margin-bottom: 8px; }
+  .section h3 { font-size: 2rem; font-weight: 700; margin-bottom: 24px; }
+  .section-dark h3 { color: #fff; }
+  .section p { font-size: 0.95rem; line-height: 1.8; color: #555; max-width: 700px; }
+  .section-dark p { color: #aaa; }
+
+  /* Two-column layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+  .two-col.reverse { direction: rtl; }
+  .two-col.reverse > * { direction: ltr; }
+
+  /* Image placeholder */
+  .img-placeholder {
+    background: #e8e8e8; border-radius: 12px; height: 300px;
+    display: flex; align-items: center; justify-content: center;
+    color: #bbb; font-size: 0.85rem; font-style: italic;
+  }
+  .section-dark .img-placeholder { background: #1a1a1a; color: #444; }
+
+  /* Trade study table */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.85rem; }
+  th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #ddd; color: #999; font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+  .section-dark th { border-color: #333; }
+  .section-dark td { border-color: #222; }
+  tr.winner td { font-weight: 700; color: #16a34a; }
+  .section-dark tr.winner td { color: #4ade80; }
+
+  /* Test cards row */
+  .test-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 24px; }
+  .test-card {
+    background: #1a1a1a; border-radius: 10px; padding: 20px; text-align: center;
+    transition: transform 0.2s ease;
+  }
+  .test-card:hover { transform: scale(1.03); }
+  .test-card .test-id { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  .test-card .test-name { font-size: 0.8rem; color: #fff; font-weight: 600; margin: 8px 0; }
+  .test-card .test-result { font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; display: inline-block; }
+  .result-fix { background: #1a3a1a; color: #4ade80; }
+  .result-ok { background: #1a2a3a; color: #60a5fa; }
+  .result-warn { background: #3a2a1a; color: #fbbf24; }
+
+  /* Hover detail tooltip */
+  .test-card .tooltip {
+    display: none; position: absolute; background: #222; color: #ccc; padding: 12px 16px;
+    border-radius: 8px; font-size: 0.75rem; text-align: left; width: 220px;
+    z-index: 10; margin-top: 8px; line-height: 1.5; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .test-card { position: relative; }
+  .test-card:hover .tooltip { display: block; }
+
+  /* Rev changes list */
+  .change-list { list-style: none; padding: 0; }
+  .change-list li { padding: 12px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; display: flex; align-items: baseline; gap: 12px; }
+  .change-list .source { font-size: 0.7rem; color: #999; background: #f0f0f0; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>QDD Gearbox Actuator</h1>
+  <p>A 3D-printed 5:1 planetary gearbox designed for backdrivability. Built from scratch with structured trade studies, parametric CAD in CATIA V6, and iterative prototype testing.</p>
+  <div class="specs-row">
+    <div class="spec-pill"><div class="val">5:1</div><div class="lbl">Ratio</div></div>
+    <div class="spec-pill"><div class="val">&le; 0.5&deg;</div><div class="lbl">Backlash</div></div>
+    <div class="spec-pill"><div class="val">16 Nm</div><div class="lbl">Peak Torque</div></div>
+    <div class="spec-pill"><div class="val">&lt; $120</div><div class="lbl">Budget</div></div>
+    <div class="spec-pill"><div class="val">FDM</div><div class="lbl">3D Printed</div></div>
+  </div>
+</div>
+
+<!-- Trade Studies -->
+<div class="section">
+  <h2>01 &mdash; Design Decisions</h2>
+  <div class="two-col">
+    <div>
+      <h3>Trade Studies</h3>
+      <p>Each major decision was evaluated through weighted Pugh matrices. 6 gear concepts scored across 7 criteria. Planetary won with a 4.40 weighted score, driven by balanced cost, durability, and printability.</p>
+      <table>
+        <tr><th>Concept</th><th>Cost</th><th>Transparency</th><th>DFM</th><th>Total</th></tr>
+        <tr class="winner"><td>Planetary</td><td>5</td><td>4</td><td>4</td><td>4.40</td></tr>
+        <tr><td>Sequential</td><td>4.5</td><td>4</td><td>4</td><td>4.05</td></tr>
+        <tr><td>Drive Belt</td><td>3.5</td><td>5</td><td>4</td><td>3.98</td></tr>
+        <tr><td>Cycloidal</td><td>3</td><td>3.5</td><td>3</td><td>3.73</td></tr>
+      </table>
+    </div>
+    <div class="img-placeholder">[Trade study matrix visual]</div>
+  </div>
+</div>
+
+<!-- CATIA -->
+<div class="section-dark">
+  <div class="section-inner">
+    <h2>02 &mdash; CAD Architecture</h2>
+    <div class="two-col reverse">
+      <div>
+        <h3>Skeleton-Driven Design in CATIA V6</h3>
+        <p>~60-80 hours learning CATIA V6 from scratch. The assembly is driven by a master skeleton containing all parameters — parts never reference each other directly. Change one skeleton value, everything updates.</p>
+        <p style="margin-top:16px;">Key principles: single source of truth, no B-Rep references, body-level patterning, placeholder gears as geometric contracts. Chain-of-zeros positioning eliminates offset errors across sub-assemblies.</p>
+      </div>
+      <div class="img-placeholder">[CATIA assembly cross-section]</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tolerancing -->
+<div class="section">
+  <h2>03 &mdash; DFM &amp; Tolerancing</h2>
+  <div class="two-col">
+    <div>
+      <h3>FDM Calibration Pipeline</h3>
+      <p>ISO fit designations describe intent. FDM offsets approximate those fits. Every bearing interface has a named offset parameter in the skeleton, validated by calibration coupons before the full build.</p>
+      <p style="margin-top:16px;">All bearing interfaces target finger-press transition fits. FDM surface texture provides grip, so press fits are unnecessary for a backdrivable actuator. Self-tapping threads validated at M3-M5 as simpler alternative to heat-set inserts.</p>
+    </div>
+    <div class="img-placeholder">[Calibration coupon photo / offset diagram]</div>
+  </div>
+</div>
+
+<!-- Testing -->
+<div class="section-dark">
+  <div class="section-inner">
+    <h2>04 &mdash; Testing &amp; Validation</h2>
+    <h3>Structured Root Cause Analysis</h3>
+    <p>5 structured tests with an unknowns register, dependency map, and requirements traceability. Each test defines the question, measurement, and acceptance criteria before testing begins.</p>
+    <div class="test-cards">
+      <div class="test-card">
+        <div class="test-id">T-001</div>
+        <div class="test-name">Gear Mesh</div>
+        <div class="test-result result-fix">Fixed</div>
+        <div class="tooltip">Herringbone misalignment caused notchy feel. Switched to spur gears for Rev 00B.</div>
+      </div>
+      <div class="test-card">
+        <div class="test-id">T-002</div>
+        <div class="test-name">Lid Drag</div>
+        <div class="test-result result-fix">Fixed</div>
+        <div class="tooltip">Lid double-constrained ring + carrier. Decoupled constraints for Rev 00B.</div>
+      </div>
+      <div class="test-card">
+        <div class="test-id">T-003</div>
+        <div class="test-name">Shoulder</div>
+        <div class="test-result result-fix">Fixed</div>
+        <div class="tooltip">Print artifacts on carrier shoulders. Reoriented print strategy.</div>
+      </div>
+      <div class="test-card">
+        <div class="test-id">T-004</div>
+        <div class="test-name">Indexing</div>
+        <div class="test-result result-ok">No Issue</div>
+        <div class="tooltip">Load path analysis showed no operational force drives clocking. No change needed.</div>
+      </div>
+      <div class="test-card">
+        <div class="test-id">T-005</div>
+        <div class="test-name">Bolt Torque</div>
+        <div class="test-result result-warn">Marginal</div>
+        <div class="tooltip">Narrow window between play and binding. Confirms shoulder redesign needed.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Iteration -->
+<div class="section">
+  <h2>05 &mdash; Iteration</h2>
+  <div class="two-col">
+    <div>
+      <h3>Rev 00A &rarr; Rev 00B</h3>
+      <p>13 design changes scoped from test data. Prioritized as must-have, should-have, and nice-to-have.</p>
+      <ul class="change-list">
+        <li><span class="source">T-001</span> Switch herringbone to spur gears</li>
+        <li><span class="source">T-001</span> Enlarge output shaft + larger bearing</li>
+        <li><span class="source">T-003</span> Fix planet bearing shoulder print quality</li>
+        <li><span class="source">T-002</span> Decouple lid constraint from carrier</li>
+        <li><span class="source">T-001</span> Self-tap threads, drop heat inserts</li>
+      </ul>
+    </div>
+    <div class="img-placeholder">[Before/after prototype photos]</div>
+  </div>
+</div>
+
+<!-- Future -->
+<div class="section-dark">
+  <div class="section-inner" style="text-align:center; padding: 60px 80px;">
+    <h2>What's Next</h2>
+    <h3 style="color:#fff;">Controls, GD&amp;T, and Rev 00B Testing</h3>
+    <p style="margin: 0 auto; text-align:center;">ODrive motor integration, impedance control tuning, formal engineering drawings, tolerance stack-up analysis, and Rev 00B prototype validation.</p>
+  </div>
+</div>
+
+</body>
+</html>

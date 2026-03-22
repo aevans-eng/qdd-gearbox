@@ -1,0 +1,64 @@
+======================================================================
+PLANETARY GEAR ASSEMBLY VERIFICATION REPORT
+Generated: 2026-01-16 11:36:47
+======================================================================
+
+GEARSET PARAMETERS
+----------------------------------------
+  Name:            Gearset_B
+  Sun teeth (S):   6
+  Planet teeth (P): 9
+  Ring teeth (R):  24
+  Planets (N):     3
+  Tooth profile:   b=0.35
+  Gear ratio:      5.00:1
+  Configuration:   Ring locked, Sun input, Carrier output
+
+OVERALL STATUS: PASS
+======================================================================
+
+GEOMETRY VALIDATION
+----------------------------------------
+  [PASS] gear_ratio
+        Formula: R = S + 2P
+        Expected R: 24, Actual: 24
+  [PASS] assembly_condition
+        Formula: (S + R) mod N = 0
+        (S+R)=30, N=3, remainder=0
+  [PASS] minimum_teeth
+
+STATIC CHECK (Phase 0)
+----------------------------------------
+  Overall: PASS
+
+  Detailed checks:
+    sun_vs_planet_0: OK (0.000% overlap)
+    sun_vs_planet_1: OK (0.000% overlap)
+    sun_vs_planet_2: OK (0.000% overlap)
+    planet_0_vs_planet_1: OK (0.000% overlap)
+    planet_0_vs_planet_2: OK (0.000% overlap)
+    planet_1_vs_planet_2: OK (0.000% overlap)
+
+ROLLING SIMULATION
+----------------------------------------
+  Phases tested: 36
+  All phases valid: PASS
+  Failed phases: 0/36
+  Max sun-planet overlap: 0.000%
+  Max planet-ring overlap: 0.000%
+  Overall max overlap: 0.000%
+  Worst phase: 0.917
+  Overlap threshold: 1.0%
+
+VERIFICATION CHECKLIST
+----------------------------------------
+  [PASS] Gear ratio (R = S + 2P)
+  [PASS] Assembly condition ((S+R) mod N = 0)
+  [PASS] Minimum teeth (S,P >= 4)
+  [PASS] Sun-Planet mesh (<1% overlap)
+  [PASS] Planet-Planet clearance
+  [PASS] Multi-phase validation
+
+======================================================================
+END OF REPORT
+======================================================================

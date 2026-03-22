@@ -14,28 +14,23 @@ This is a quasi-direct-drive (QDD) actuator project. We are designing a 3D-print
 
 ## Project Structure
 
-- `docs/` — all project documentation, split by topic
-  - `01-requirements.md` — performance requirements and priorities
-  - `02-trade-studies.md` — Pugh matrices and concept selection
-  - `03-system-design.md` — system architecture, subsystems, interfaces
-  - `04-detailed-design.md` — CAD strategy, assembly stack, DFM
-  - `05-parts-list.md` — BOM and sourcing
-  - `06-references.md` — external links and open questions
-  - `07-design-calcs.md` — links to and explains each Python calculator
-  - `08-gdt-notes.md` — GD&T decisions on critical features
-  - `09-test-plan.md` — verification and test procedures
-  - `CHANGELOG.md` — design decision log with dates
-- `src/` — future firmware and control code (C, ODrive config)
+- `docs/` — project documentation (see `docs/README.md` for full index)
+  - `design/` — design reference: tolerances, assembly profile, gear params, fasteners, DFM
+  - `catia/` — CATIA workflows: STEP integration, skeleton, modeling guide
+  - `log/` — dated work log entries
+  - `images/` — screenshots and diagrams
+  - `original-documentation-jan4/` — original design sprint docs (requirements, trade studies, etc.)
+  - `_archive/` — old numbered docs (01-09), superseded
+- `prototypes/` — organized by revision
+  - `rev00a/` — notes, photos, print STEP files
+  - `rev00b/` — planned changes for next revision
+- `testing/` — test tracker, test bench design, testing methodology
 - `calc/` — Python design calculators (run with `python <script>.py`)
-  - `gear_geometry.py` — symbolic involute gear profile generation (SymPy)
-  - `tooth_stress.py` — Lewis bending + Hertzian contact stress, iterative solver
-  - `bearing_life.py` — L10 bearing lifetime prediction (ISO 281)
-  - `thermal.py` — lumped-parameter thermal model, iterative solver
-  - `utils/` — shared constants, unit helpers, data structures
-- `ui/` — visualization and dashboard
-  - `dashboard.py` — Tkinter UI displaying calc results with matplotlib plots
+- `ui/` — Tkinter dashboard for calc results
+- `pygeartrain/` — gear profile generation (external tool)
+- `src/` — future firmware and control code (C, ODrive config)
 - `drawings/` — GD&T annotation notes and tolerance schemes
-- `tests/` — validation tests for calculators (pytest)
+- `tests/` — pytest validation for calculators
 
 ## Design Context
 
@@ -48,7 +43,7 @@ This is a quasi-direct-drive (QDD) actuator project. We are designing a 3D-print
 
 ## Conventions
 
-- When discussing design decisions, reference the trade studies in `docs/02-trade-studies.md`
+- When discussing design decisions, reference the trade studies in `docs/original-documentation-jan4/trade-studies.md`
 - Keep docs updated as the design evolves
 - Use engineering units (Nm, mm, RPM, degrees)
-- When I ask about requirements, refer to `docs/01-requirements.md`
+- When I ask about requirements, refer to `docs/original-documentation-jan4/design-requirements.md`

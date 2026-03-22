@@ -20,6 +20,7 @@ venv/
 
 # Workflow System
 .context/       # Session state (personal, not for repo)
+.superpowers/   # Brainstorm mockups and session data
 logs/           # Daily engineering logs (commit selectively)
 tools/*.exe     # Compiled utilities (regenerate locally)
 
@@ -31,3 +32,4 @@ tools/*.exe     # Compiled utilities (regenerate locally)
 
 # Keep _versions/ snapshots tracked (override above)
 !pygeartrain/step_output_aaron/_versions/
+docs/_archive/hackathon-day-p1/

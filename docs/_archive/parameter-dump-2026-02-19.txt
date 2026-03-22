@@ -1,0 +1,200 @@
+Root: Skeleton A.1
+
+=== Skeleton A.1 ===
+  PARAM: Skeleton A.1\PartBody\datum_point (offset from motor)\X = 0mm
+  PARAM: Skeleton A.1\PartBody\datum_point (offset from motor)\Y = 0mm
+  PARAM: Skeleton A.1\PartBody\datum_point (offset from motor)\Z = 0mm
+  PARAM: Skeleton A.1\PartBody\Housing_inside_base\Offset = 5mm
+  PARAM: Skeleton A.1\PartBody\Gear_midplane\Offset = 22.45mm
+  PARAM: Skeleton A.1\PartBody\top_motor_shaft_plane\Offset = 30mm
+  PARAM: Skeleton A.1\PartBody\planet_bearings\Radius.1\Radius = 10mm
+  PARAM: Skeleton A.1\PartBody\planet_bearings\Radius.1\Diameter = 20mm
+  PARAM: Skeleton A.1\PartBody\planet_bearings\Radius.8\Radius = 2.5mm
+  PARAM: Skeleton A.1\PartBody\planet_bearings\Radius.8\Diameter = 5mm
+  PARAM: Skeleton A.1\PartBody\planet_bearings\Radius.9\Radius = 7mm
+  PARAM: Skeleton A.1\PartBody\planet_bearings\Radius.9\Diameter = 14mm
+  PARAM: Skeleton A.1\PartBody\planet_bearings\Length.15\Length = 13.75mm
+  PARAM: Skeleton A.1\PartBody\point_abs_datum\X = 0mm
+  PARAM: Skeleton A.1\PartBody\point_abs_datum\Y = 0mm
+  PARAM: Skeleton A.1\PartBody\point_abs_datum\Z = 0mm
+  PARAM: Skeleton A.1\PartBody\PUB_z_axis\X = 0
+  PARAM: Skeleton A.1\PartBody\PUB_z_axis\Y = 0
+  PARAM: Skeleton A.1\PartBody\PUB_z_axis\Z = 1
+  PARAM: Skeleton A.1\PartBody\PUB_z_axis\Start = 0mm
+  PARAM: Skeleton A.1\PartBody\PUB_z_axis\End = 150mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.1\Radius = 37.5mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.1\Diameter = 75mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.2\Radius = 10mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.2\Diameter = 20mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.9\Radius = 13.75mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.9\Diameter = 27.5mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.11\Radius = 2.5mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.11\Diameter = 5mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.12\Radius = 7mm
+  PARAM: Skeleton A.1\PartBody\Gears\Radius.12\Diameter = 14mm
+  PARAM: Skeleton A.1\PartBody\main_bearing\Radius.1\Radius = 12.5mm
+  PARAM: Skeleton A.1\PartBody\main_bearing\Radius.1\Diameter = 25mm
+  PARAM: Skeleton A.1\PartBody\main_bearing\Radius.2\Radius = 18.5mm
+  PARAM: Skeleton A.1\PartBody\main_bearing\Radius.2\Diameter = 37mm
+  PARAM: Skeleton A.1\PartBody\main_bearing\Radius.3\Radius = 10mm
+  PARAM: Skeleton A.1\PartBody\main_bearing\Radius.3\Diameter = 20mm
+  PARAM: Skeleton A.1\PartBody\Carrier\Radius.3\Radius = 35mm
+  PARAM: Skeleton A.1\PartBody\Carrier\Radius.3\Diameter = 70mm
+  PARAM: Skeleton A.1\PartBody\Carrier\Radius.5\Radius = 23.75mm
+  PARAM: Skeleton A.1\PartBody\Carrier\Radius.5\Diameter = 47.5mm
+  PARAM: Skeleton A.1\PartBody\carrier_bottom\Offset = 1.5mm
+  PARAM: Skeleton A.1\PartBody\carrier_top\Offset = 14mm
+  PARAM: Skeleton A.1\PartBody\carrier_min_thickness_top\Offset = 2mm
+  PARAM: Skeleton A.1\PartBody\carrier_min_thickness_bottom\Offset = 8.95mm
+  PARAM: Skeleton A.1\PartBody\Point.2\H = 0mm
+  PARAM: Skeleton A.1\PartBody\Point.2\V = 0mm
+  PARAM: Skeleton A.1\PartBody\Point.2\X = 1
+  PARAM: Skeleton A.1\PartBody\Point.2\Y = -3.622271632e-071
+  PARAM: Skeleton A.1\PartBody\Point.2\Z = -1.504632769e-036
+  PARAM: Skeleton A.1\PartBody\gear_top\Offset = 10mm
+  PARAM: Skeleton A.1\PartBody\housing_body_top\Offset = 66.35mm
+  PARAM: Skeleton A.1\PartBody\Point.5\Length = 23.75mm
+  PARAM: Skeleton A.1\PartBody\planet_center_datum_axis\Start = 0mm
+  PARAM: Skeleton A.1\PartBody\planet_center_datum_axis\End = 150mm
+  PARAM: Skeleton A.1\PartBody\housing_base_mounting_layout\Length.18\Length = 44mm
+  PARAM: Skeleton A.1\PartBody\housing_base_mounting_layout\Length.19\Length = 76mm
+  PARAM: Skeleton A.1\PartBody\housing_base_mounting_layout\Length.20\Length = 46mm
+  PARAM: Skeleton A.1\PartBody\housing_base_mounting_layout\Radius.39\Radius = 2.25mm
+  PARAM: Skeleton A.1\PartBody\housing_base_mounting_layout\Radius.39\Diameter = 4.5mm
+  PARAM: Skeleton A.1\PartBody\housing_base_mounting_layout\Radius.43\Radius = 1.7mm
+  PARAM: Skeleton A.1\PartBody\housing_base_mounting_layout\Radius.43\Diameter = 3.4mm
+  PARAM: Skeleton A.1\PartBody\gearbox_assembly_sandwich_fastener_distn\Radius.3\Radius = 42.5mm
+  PARAM: Skeleton A.1\PartBody\gearbox_assembly_sandwich_fastener_distn\Radius.3\Diameter = 85mm
+  PARAM: Skeleton A.1\PartBody\gearbox_assembly_sandwich_fastener_distn\Radius.6\Radius = 2.75mm
+  PARAM: Skeleton A.1\PartBody\gearbox_assembly_sandwich_fastener_distn\Radius.6\Diameter = 5.5mm
+  PARAM: Housing_base_thickness = 5mm
+  PARAM: Housing_min_wall_thickness = 7mm
+  PARAM: Main_bearing_ID = 25mm
+  PARAM: Main_bearing_OD = 37mm
+  PARAM: Main_bearing_height = 6.95mm
+  PARAM: sun_pitch_diam = 20mm
+  PARAM: planet_pitch_diam = 27.5mm
+  PARAM: ring_pitch_diam = 75mm
+  PARAM: carrier_bearing_ID = 5mm
+  PARAM: carrier_bearing_OD = 14mm
+  PARAM: carrier_bearing_h = 5mm
+  PARAM: number_of_planets = 3
+  PARAM: main_bearing_base_clearance = 1.5mm
+  PARAM: carrier_plate_bottom_h = 10.95mm
+  PARAM: gear_height = 20mm
+  PARAM: ring_wall_thickness = 10mm
+  PARAM: carrier_ring_clearance = 5mm
+  PARAM: carrier_plate_thickness = 4mm
+  PARAM: planet_mid_path = 23.75mm
+  PARAM: planet_spacing = 120deg
+  PARAM: carrier_planet_clearance = 2mm
+  PARAM: carrier_diam = 70mm
+  PARAM: housing_width = 109mm
+  PARAM: housing_body_total_height = 66.35mm
+  PARAM: carrier_lid_clearance = 2mm
+  PARAM: motor_shaft_clearance_hole = 18mm
+  PARAM: main_bearing_shoulder_ID = 27.4mm
+  PARAM: housing_lid_thickness = 15.95mm
+  PARAM: main_bearing_shoulder_OD = 34.5mm
+  PARAM: carrier_output_OD = 25.1mm
+  PARAM: carrier_output_lid_stickout = 1.5mm
+  PARAM: carrier_output_shaft_length = 17.45mm
+  PARAM: housing_lid_min_thickness = 7mm
+  PARAM: carrier_base_clearance = 3mm
+  PARAM: planet_bearing_OD = 14mm
+  PARAM: planet_bearing_ID = 5mm
+  PARAM: planet_bearing_h = 5mm
+  PARAM: carrier_plate_min_thickness = 2mm
+  PARAM: planet_bearing_shoulder_ID = 6.6mm
+  PARAM: planet_bearing_shoulder_OD = 12.4mm
+  PARAM: gearbox_housing_motor_fastener_diam = 4.5mm
+  PARAM: gearbox_housing_motor_housing_fastener_diam = 3.4mm
+  PARAM: gearbox_housing_sandwich_fastener_diam = 5.5mm
+  PARAM: number_of_sandwich_fasteners = 4
+  PARAM: carrier_planet_fastener_diam = 5mm
+  PARAM: m4_heatsert_diam = 5mm
+  PARAM: m4_heatsert_depth = 6mm
+  PARAM: main_bearing_bore_offset = 0.1mm
+  PARAM: carrier_shaft_offset = 0.1mm
+  PARAM: ring_housing_diam_offset = 0.3mm
+  PARAM: lid_step_clearance = 0.25mm
+  PARAM: m3_heatsert_diam = 4.2mm
+  PARAM: m3_heatsert_depth = 6mm
+  PARAM: housing_body_bearing_shaft = 25.1mm
+  PARAM: lid_bearing_bore = 37.1mm
+  PARAM: housing_ring_gear_bore = 95.3mm
+  PARAM: lid_bearing_OD = 37mm
+  PARAM: lid_bearing_ID = 25mm
+  PARAM: lid_bearing_h = 6.95mm
+  PARAM: lid_bearing_bore_offset = 0.1mm
+  PARAM: lid_step_OD = 94.75mm
+  PARAM: Skeleton A.1\ABS_origin_axis\Origin\X = 0mm
+  PARAM: Skeleton A.1\ABS_origin_axis\Origin\Y = 0mm
+  PARAM: Skeleton A.1\ABS_origin_axis\Origin\Z = 0mm
+  PARAM: Skeleton A.1\ABS_origin_axis\XAxis\X = 1
+  PARAM: Skeleton A.1\ABS_origin_axis\XAxis\Y = 0
+  PARAM: Skeleton A.1\ABS_origin_axis\XAxis\Z = 0
+  PARAM: Skeleton A.1\ABS_origin_axis\YAxis\X = 0
+  PARAM: Skeleton A.1\ABS_origin_axis\YAxis\Y = 1
+  PARAM: Skeleton A.1\ABS_origin_axis\YAxis\Z = 0
+  PARAM: Skeleton A.1\ABS_origin_axis\ZAxis\X = 0
+  PARAM: Skeleton A.1\ABS_origin_axis\ZAxis\Y = 0
+  PARAM: Skeleton A.1\ABS_origin_axis\ZAxis\Z = 1
+  PARAM: Skeleton A.1\datum_axis (mounting height)\Origin\X = 0mm
+  PARAM: Skeleton A.1\datum_axis (mounting height)\Origin\Y = 0mm
+  PARAM: Skeleton A.1\datum_axis (mounting height)\Origin\Z = 0mm
+  PARAM: Skeleton A.1\datum_axis (mounting height)\XAxis\X = 1
+  PARAM: Skeleton A.1\datum_axis (mounting height)\XAxis\Y = 0
+  PARAM: Skeleton A.1\datum_axis (mounting height)\XAxis\Z = 0
+  PARAM: Skeleton A.1\datum_axis (mounting height)\YAxis\X = 0
+  PARAM: Skeleton A.1\datum_axis (mounting height)\YAxis\Y = 1
+  PARAM: Skeleton A.1\datum_axis (mounting height)\YAxis\Z = 0
+  PARAM: Skeleton A.1\datum_axis (mounting height)\ZAxis\X = 0
+  PARAM: Skeleton A.1\datum_axis (mounting height)\ZAxis\Y = 0
+  PARAM: Skeleton A.1\datum_axis (mounting height)\ZAxis\Z = 1
+
+  REL [Formula.2]: Housing_base_thickness
+  REL [Formula.3]: clearance
+  REL [Formula.4]: gear_height/2 + carrier_plate_bottom_h + main_bearing_base_clearance
+  REL [Formula.6]: ring_pitch_diam 
+  REL [Formula.7]: sun_pitch_diam 
+  REL [Formula.8]: (ring_pitch_diam -sun_pitch_diam)/2
+  REL [Formula.9]: planet_pitch_diam 
+  REL [Formula.13]: Main_bearing_ID 
+  REL [Formula.14]: Main_bearing_OD 
+  REL [Formula.15]: ring_pitch_diam-carrier_ring_clearance
+  REL [Formula.17]: (sun_pitch_diam+planet_pitch_diam)/2
+  REL [Formula.18]: planet_mid_path
+  REL [Formula.20]: 360deg/number_of_planets
+  REL [Formula.29]: main_bearing_base_clearance
+  REL [Formula.30]: gear_height/2 + carrier_plate_thickness
+  REL [Formula.31]: ring_pitch_diam - carrier_ring_clearance
+  REL [Formula.32]: ring_pitch_diam+2*ring_wall_thickness+2*Housing_min_wall_thickness
+  REL [Formula.33]: Housing_base_thickness+main_bearing_base_clearance+Main_bearing_height+carrier_plate_bottom_h+gear_height+carrier_plate_thickness +carrier_lid_clearance + housing_lid_thickness
+  REL [Formula.34]: gear_height/2
+  REL [Formula.35]: housing_body_total_height
+  REL [Formula.36]: housing_lid_thickness+carrier_output_lid_stickout
+  REL [Formula.37]: housing_lid_min_thickness+Main_bearing_height+carrier_lid_clearance
+  REL [Formula.38]: carrier_plate_min_thickness + carrier_planet_clearance
+  REL [Formula.39]: carrier_plate_thickness+Main_bearing_height
+  REL [Formula.40]: sun_pitch_diam 
+  REL [Formula.44]: sun_pitch_diam 
+  REL [Formula.46]: planet_bearing_ID 
+  REL [Formula.47]: planet_bearing_OD 
+  REL [Formula.48]: planet_pitch_diam/2
+  REL [Formula.49]: carrier_plate_min_thickness 
+  REL [Formula.50]: carrier_plate_bottom_h-carrier_planet_clearance
+  REL [Formula.52]: planet_mid_path 
+  REL [Formula.53]: gearbox_housing_motor_fastener_diam
+  REL [Formula.54]: gearbox_housing_motor_housing_fastener_diam
+  REL [Formula.55]: ring_pitch_diam + ring_wall_thickness
+  REL [Formula.56]: gearbox_housing_sandwich_fastener_diam
+  REL [Formula.59]: Main_bearing_ID + carrier_shaft_offset
+  REL [Formula.60]: ring_pitch_diam + 2*ring_wall_thickness + ring_housing_diam_offset
+  REL [Formula.61]: Main_bearing_ID + main_bearing_bore_offset
+  REL [Formula.62]: lid_bearing_OD+lid_bearing_bore_offset
+  REL [Formula.63]: Main_bearing_OD
+  REL [Formula.64]: Main_bearing_ID
+  REL [Formula.65]: Main_bearing_height
+  REL [Formula.66]: ring_pitch_diam + 2*ring_wall_thickness - lid_step_clearance
+

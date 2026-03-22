@@ -1,13 +1,14 @@
 {
-  "target_date": "2026-04-17",
+  "target_date": "2026-05-15",
   "streak": {
-    "current": 1,
-    "last_activity": "2026-03-20",
-    "longest": 1
+    "current": 2,
+    "last_activity": "2026-03-21",
+    "longest": 2
   },
   "topics": {
     "01": {
       "name": "Motor Fundamentals",
+      "priority": "project",
       "gaps": [
         "FOC mechanism",
         "Lorentz force / linearity",
@@ -22,7 +23,8 @@
           "date": "2026-03-20"
         },
         "learn": {
-          "done": false
+          "done": true,
+          "date": "2026-03-21"
         },
         "distill": {
           "done": false
@@ -45,6 +47,7 @@
     },
     "02": {
       "name": "Torque-Speed Envelope",
+      "priority": "project",
       "gaps": [
         "back-EMF mechanism and equation (V_bemf = Ke * omega)",
         "voltage headroom and current limiting at speed",
@@ -58,7 +61,8 @@
           "date": "2026-03-20"
         },
         "learn": {
-          "done": false
+          "done": true,
+          "date": "2026-03-21"
         },
         "distill": {
           "done": false
@@ -81,6 +85,7 @@
     },
     "03": {
       "name": "Thermal",
+      "priority": "project",
       "gaps": [
         "three heat sources (copper/iron/friction) and their dependencies",
         "I-squared relationship - why squaring and what it means for high torque",
@@ -117,6 +122,7 @@
     },
     "04": {
       "name": "Friction & Backdrivability",
+      "priority": "project",
       "gaps": [
         "Coulomb friction model (constant, speed-independent)",
         "viscous friction model (proportional to speed)",
@@ -154,6 +160,7 @@
     },
     "05": {
       "name": "Gearbox Mechanics",
+      "priority": "project",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -183,6 +190,7 @@
     },
     "06": {
       "name": "Measurement & Instrumentation",
+      "priority": "project",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -212,6 +220,7 @@
     },
     "07": {
       "name": "Testing Methodology",
+      "priority": "project",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -241,6 +250,7 @@
     },
     "08": {
       "name": "Dynamics & System ID",
+      "priority": "interview",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -270,6 +280,7 @@
     },
     "09": {
       "name": "Impedance Control",
+      "priority": "interview",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -299,6 +310,7 @@
     },
     "10": {
       "name": "Backlash & Compliance",
+      "priority": "breadth",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -328,6 +340,7 @@
     },
     "11": {
       "name": "GD&T & Tolerancing",
+      "priority": "breadth",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -357,6 +370,7 @@
     },
     "12": {
       "name": "DFM & Manufacturing",
+      "priority": "breadth",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -386,6 +400,7 @@
     },
     "13": {
       "name": "FEA Literacy",
+      "priority": "breadth",
       "gaps": [],
       "steps": {
         "diagnose": {
@@ -415,13 +430,47 @@
     }
   },
   "unlocks": {
+    "message_tesla_intro": {
+      "required_topics": [],
+      "unlocked": true,
+      "label": "First outreach to Francis & Onur",
+      "target_date": "2026-03-23"
+    },
     "resume_update": {
       "required_topics": [
         "01",
         "02"
       ],
+      "requires_flag": "cycle1_data",
       "unlocked": false,
-      "label": "Update resume with BLDC motor characterization"
+      "label": "Update resume with motor characterization data",
+      "target_date": "2026-03-26"
+    },
+    "application_v1": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "requires_flag": "test_data_collected",
+      "unlocked": false,
+      "label": "Submit first application draft",
+      "target_date": "2026-04-05"
+    },
+    "followup_tesla_technical": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "requires_flag": "test_data_collected",
+      "unlocked": false,
+      "label": "Technical follow-up to Francis/Onur with test results",
+      "target_date": "2026-04-07"
     },
     "test_campaign": {
       "required_topics": [
@@ -432,19 +481,18 @@
         "05"
       ],
       "unlocked": false,
-      "label": "Start test campaign (Phases 0-1)"
+      "label": "Start formal test campaign",
+      "target_date": "2026-04-07"
     },
-    "portfolio_explainer": {
+    "message_tesla_testing": {
       "required_topics": [
-        "01",
-        "02",
-        "03",
-        "04",
-        "05"
+        "06",
+        "07"
       ],
       "requires_flag": "test_data_collected",
       "unlocked": false,
-      "label": "Write first-principles explainer for portfolio"
+      "label": "Message test engineers (Kushan, Mohamed)",
+      "target_date": "2026-04-28"
     },
     "linkedin_post": {
       "required_topics": [
@@ -456,10 +504,50 @@
         "06",
         "07"
       ],
+      "requires_flag": "test_data_collected",
       "unlocked": false,
-      "label": "Post on LinkedIn about testing methodology"
+      "label": "LinkedIn post with test results",
+      "target_date": "2026-05-01"
     },
-    "message_tesla": {
+    "message_tesla_gated": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07"
+      ],
+      "requires_flag": "test_data_collected",
+      "unlocked": false,
+      "label": "Message gated contacts (Aarjav, Hazem)",
+      "target_date": "2026-05-01"
+    },
+    "portfolio_explainer": {
+      "required_topics": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "requires_flag": "test_data_collected",
+      "unlocked": false,
+      "label": "Write first-principles explainer for portfolio",
+      "target_date": "2026-05-03"
+    },
+    "portfolio_demo": {
+      "required_topics": [
+        "08",
+        "09"
+      ],
+      "requires_flag": "impedance_demo_done",
+      "unlocked": false,
+      "label": "Add impedance control demo to portfolio",
+      "target_date": "2026-05-10"
+    },
+    "message_tesla_senior": {
       "required_topics": [
         "01",
         "02",
@@ -471,17 +559,10 @@
         "08",
         "09"
       ],
+      "requires_flag": "test_data_collected",
       "unlocked": false,
-      "label": "Message Tesla contacts about impedance control"
-    },
-    "portfolio_demo": {
-      "required_topics": [
-        "08",
-        "09"
-      ],
-      "requires_flag": "impedance_demo_done",
-      "unlocked": false,
-      "label": "Add impedance control demo to portfolio"
+      "label": "Message senior contacts (Dinka, Lascaris)",
+      "target_date": "2026-05-10"
     },
     "interview_ready": {
       "required_topics": [
@@ -500,10 +581,12 @@
         "13"
       ],
       "unlocked": false,
-      "label": "Interview-ready -- reach out to recruiters"
+      "label": "Interview-ready -- full prep complete",
+      "target_date": "2026-05-15"
     }
   },
   "flags": {
+    "cycle1_data": false,
     "test_data_collected": false,
     "impedance_demo_done": false
   }

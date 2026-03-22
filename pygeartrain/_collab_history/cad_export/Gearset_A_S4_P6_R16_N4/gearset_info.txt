@@ -1,0 +1,22 @@
+Gearset: Gearset_A
+Configuration: Ring Locked, Sun Input, Carrier Output
+Ratio: 5.00:1
+
+Gear Parameters:
+  Sun teeth (S): 4
+  Planet teeth (P): 6
+  Ring teeth (R): 16
+  Number of planets (N): 4
+  Tooth profile (b): 0.35
+
+Physical Dimensions:
+  Ring outer diameter: 70.0 mm
+  Gear thickness: 10.0 mm
+  Carrier path radius: 20.9654 mm
+
+Files:
+  ring_z0.txt, ring_z_top.txt, ring_z_bot.txt - Ring gear profiles
+  planet_z0.txt, planet_z_top.txt, planet_z_bot.txt - Planet gear profile (one, pattern for others)
+  sun_z0.txt, sun_z_top.txt, sun_z_bot.txt - Sun gear profiles
+  carrier_path.txt - Circle for carrier/planet centers
+  planet_centers.txt - XYZ positions of planet gear centers
