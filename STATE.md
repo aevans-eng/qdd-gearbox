@@ -1,36 +1,42 @@
 # STATE — QDD Gearbox
-> Last updated: 2026-03-20 (learning system created)
+> Last updated: 2026-03-22 (first power-on + control panel built)
 
 ## Status
-Rev 00B printed and assembled. RTM created. **Learning system built:** 13 workbooks covering motor physics through FEA literacy, with grading workflow and progress tracker. Ready to start Phase 0 testing and workbook study in parallel.
+Rev 00B printed and assembled. **First power-on complete** — motor calibrated, all control modes verified (velocity, position, torque), control panel GUI built. Supply voltage set to 48V (not 55V) after independent spec verification. Ready for Phase 0/1 testing.
 
 ## What Changed Last Session
-- Created **QDD Learning System** — 13 graded workbooks (`testing/learn/workbooks/01-*.md` through `13-*.md`)
-  - 141 total questions across concept checks, applied problems, design judgment, and teach-it sections
-  - Progress tracker at `testing/learn/workbooks/_progress.md`
-  - Spec: `docs/specs/2026-03-20-qdd-learning-system-design.md`
-  - Plan: `docs/specs/2026-03-20-qdd-learning-system-plan.md`
-- All workbooks formatted with checkbox confidence ratings, response areas, and "How to use" instructions
+- **First power-on and motor bring-up** — ODrive connected, calibrated, spun under all 3 control modes
+- **Onboarding guide** from buddy moved to `testing/hardware/odrive-onboarding-guide.md`
+- **SOP created** — `testing/campaign/sop-odrive-session.md` (safety checklists, startup sequence, emergency procedures)
+- **Control panel GUI** — `testing/tools/odrive-control-panel.py` with desktop shortcut
+  - Output shaft units, adjustable limits, trap trajectory position control, E-stop
+- **Supply voltage reduced to 48V** — D6374 rated 48V max, 55V left only 5V regen headroom to 60V MOSFET limit
+- **Session log started** — `testing/data/session-log.md`
+- Zadig driver installed, odrive 0.5.4 Python package installed
 
 ## What's Next (Priority Order)
-1. **Start workbook 01** (Motor Fundamentals) — work through open-book, bring to Claude for grading
-2. **Execute test campaign** — `testing/test-campaign-rev00b.md` (5 phases). Track in `testing/qdd-rtm.xlsx`.
-3. Take hero photo of assembled Rev 00B (clean background, good lighting)
-4. Update portfolio page with test data, plots, and impedance control demo
-5. Phase 2: first-principles explainers on aaronevans.ca (after topics 1-5 complete)
+1. **Properly clamp motor** before sustained testing
+2. **Phase 1 tests** (gearbox attached): T-012 backlash, T-013 hand backdriving
+3. **Phase 0 tests** (motor only, requires gearbox removal): T-009 Kt verify, T-010 cogging, T-011 friction, T-014 step response
+4. **Start workbook 01** (Motor Fundamentals) — work through open-book, bring to Claude for grading
+5. Take hero photo of assembled Rev 00B
+6. Update portfolio page with test data
 
 ## File Map
 | What you need | Read this |
 |--------------|-----------|
 | Project rules & conventions | CLAUDE.md |
 | **RTM — requirements, tests, traceability** | **testing/qdd-rtm.xlsx** |
-| **Test campaign procedures** | **testing/test-campaign-rev00b.md** |
+| **Test campaign procedures** | **testing/campaign/test-campaign-rev00b.md** |
+| **Session SOP (follow every time)** | **testing/campaign/sop-odrive-session.md** |
+| **Session log** | **testing/data/session-log.md** |
 | **Learning workbooks (13)** | **testing/learn/workbooks/** (progress: `_progress.md`) |
 | Rev 00B scoped changes | prototypes/rev00b/changes.md |
 | Rev 00B photos | prototypes/rev00b/photos/ |
 | Official docs (content bank, media plan) | docs/official/ |
 | Research (ODrive, impedance, PLA gears) | research/gemini-deep-research/01-actuator-testing-methodology/ |
-| Test bench design | testing/test-bench-design.md |
+| **ODrive onboarding guide** (setup, safety, gains, troubleshooting) | **testing/hardware/odrive-onboarding-guide.md** |
+| Test bench design | testing/hardware/test-bench-design.md |
 | Documentation index | docs/README.md |
 | Design docs (tolerances, assembly, gear params) | docs/design/ |
 | Future design ideas (bearing, housing, integration) | docs/design/future-ideas.md |
