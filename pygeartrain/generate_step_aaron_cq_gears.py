@@ -191,7 +191,7 @@ def make_gearset():
 
 def assembly_profiles(gearset, sun_angle_deg=0.0):
     """
-    Return 2D profile positions using the verified static phasing baseline.
+    Return animated 2D profile positions.
     """
     sun_angle = math.radians(sun_angle_deg)
     planet_ratio = gearset.sun.z / (gearset.planet.z * 2.0)
@@ -225,6 +225,33 @@ def assembly_profiles(gearset, sun_angle_deg=0.0):
                 math.sin(orbit_angle) * gearset.orbit_r,
             ])
         )
+
+    return arranged
+
+
+def static_assembly_profiles(gearset):
+    """
+    Return 2D profiles using the same static body transforms as the exported
+    STEP assembly. This is the path to use for static mesh verification.
+    """
+    sun_deg, planet_deg, ring_deg = static_phase_offsets_deg(gearset)
+    arranged = {
+        "sun_center": np.array([0.0, 0.0]),
+        "ring_center": np.array([0.0, 0.0]),
+        "sun": rotate_xy(gearset.sun.gear_points(), math.radians(sun_deg)),
+        "ring": rotate_xy(gearset.ring.gear_points(), math.radians(ring_deg)),
+        "planets": [],
+        "planet_centers": [],
+    }
+
+    planet_body = rotate_xy(gearset.planet.gear_points(), math.radians(planet_deg))
+    planet_step_deg = 360.0 / gearset.n_planets
+    for planet_index in range(gearset.n_planets):
+        orbit_angle_deg = PLANET_0_ANGLE_DEG + planet_index * planet_step_deg
+        x = math.cos(math.radians(orbit_angle_deg)) * gearset.orbit_r
+        y = math.sin(math.radians(orbit_angle_deg)) * gearset.orbit_r
+        arranged["planets"].append(translate_xy(planet_body, x, y))
+        arranged["planet_centers"].append(np.array([x, y]))
 
     return arranged
 
@@ -286,7 +313,7 @@ def draw_contact_overlay(ax, gearset, arrangement, overlay):
 
 
 def save_contact_diagnostics(output_dir, gearset):
-    arrangement = assembly_profiles(gearset, 0.0)
+    arrangement = static_assembly_profiles(gearset)
     overlay = sun_planet_geometry_overlay(gearset, arrangement, planet_index=0)
 
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -365,7 +392,7 @@ def save_preview_images(output_dir, gearset):
         for planet in arrangement["planets"]:
             ax.plot(*closed_xy(planet).T, color="#ae2012", linewidth=0.85)
 
-    arrangement = assembly_profiles(gearset, 0.0)
+    arrangement = static_assembly_profiles(gearset)
 
     fig, ax = plt.subplots(figsize=(8, 8))
     draw(ax, arrangement)
@@ -391,7 +418,7 @@ def save_preview_images(output_dir, gearset):
     fig.savefig(os.path.join(output_dir, "mesh_preview_zoom.png"), dpi=220)
     plt.close(fig)
 
-    contact = assembly_profiles(gearset, 0.0)
+    contact = static_assembly_profiles(gearset)
     top_planet = contact["planets"][0]
     center_x = np.mean(top_planet[:, 0])
     center_y = np.mean(top_planet[:, 1])

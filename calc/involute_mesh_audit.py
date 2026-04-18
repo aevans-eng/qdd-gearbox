@@ -1,12 +1,11 @@
 """
-Numerical mesh audit for the cq_gears involute planetary generator.
+Fast sampled-outline mesh audit for the cq_gears involute planetary generator.
 
-This script works directly on sampled 2D tooth outlines. It estimates:
-- overlap area between meshing profiles using rasterized point-in-polygon tests
-- approximate boundary gap using a downsampled nearest-point search
-- phase offsets that minimize overlap for sun/planet and planet/ring pairs
-
-The goal is to catch indexing and static-meshing issues before printing.
+This script intentionally avoids raster area calculations in the search loop.
+It uses the same static body placement as the STEP export path and reports:
+- sampled outline overlap count for the sun-planet pair
+- minimum sampled boundary gap for sun-planet and planet-ring pairs
+- a coarse phase search around one tooth pitch to catch obvious indexing errors
 """
 
 from __future__ import annotations
@@ -30,14 +29,13 @@ REPORT_PATH = os.path.join(
     "2026-04-17_involute-mesh-audit.md",
 )
 
-
-RASTER_STEP_MM = 0.08
+OUTLINE_SUBDIVISIONS = 2
 BOUNDARY_STRIDE = 24
 
 
 @dataclass
 class PairMetrics:
-    overlap_area_mm2: float
+    overlap_count: int
     min_gap_mm: float
 
 
@@ -49,29 +47,35 @@ def load_generator():
     return module
 
 
-def poly_metrics(poly_a_xy: np.ndarray, poly_b_xy: np.ndarray) -> PairMetrics:
+def dense_outline(poly_xy: np.ndarray, subdivisions: int = OUTLINE_SUBDIVISIONS) -> np.ndarray:
+    samples = []
+    for index in range(len(poly_xy)):
+        start = poly_xy[index]
+        end = poly_xy[(index + 1) % len(poly_xy)]
+        segment = np.linspace(start, end, subdivisions, endpoint=False)
+        samples.append(segment)
+    return np.vstack(samples)
+
+
+def pair_metrics(poly_a_xy: np.ndarray, poly_b_xy: np.ndarray) -> PairMetrics:
+    dense_a = dense_outline(poly_a_xy)[::BOUNDARY_STRIDE]
+    dense_b = dense_outline(poly_b_xy)[::BOUNDARY_STRIDE]
+
     path_a = Path(poly_a_xy)
     path_b = Path(poly_b_xy)
+    overlap_count = int(path_a.contains_points(dense_b).sum() + path_b.contains_points(dense_a).sum())
 
-    min_x = max(poly_a_xy[:, 0].min(), poly_b_xy[:, 0].min())
-    max_x = min(poly_a_xy[:, 0].max(), poly_b_xy[:, 0].max())
-    min_y = max(poly_a_xy[:, 1].min(), poly_b_xy[:, 1].min())
-    max_y = min(poly_a_xy[:, 1].max(), poly_b_xy[:, 1].max())
-
-    overlap_area = 0.0
-    if max_x > min_x and max_y > min_y:
-        xs = np.arange(min_x, max_x + RASTER_STEP_MM, RASTER_STEP_MM)
-        ys = np.arange(min_y, max_y + RASTER_STEP_MM, RASTER_STEP_MM)
-        grid = np.stack(np.meshgrid(xs, ys), axis=-1).reshape(-1, 2)
-        inside = path_a.contains_points(grid) & path_b.contains_points(grid)
-        overlap_area = inside.sum() * (RASTER_STEP_MM ** 2)
-
-    a = poly_a_xy[::BOUNDARY_STRIDE]
-    b = poly_b_xy[::BOUNDARY_STRIDE]
-    diff = a[:, None, :] - b[None, :, :]
+    diff = dense_a[:, None, :] - dense_b[None, :, :]
     dist2 = np.sum(diff * diff, axis=2)
     min_gap = float(np.sqrt(dist2.min()))
-    return PairMetrics(overlap_area_mm2=overlap_area, min_gap_mm=min_gap)
+    return PairMetrics(overlap_count=overlap_count, min_gap_mm=min_gap)
+
+
+def planet_center(module, gearset, planet_index: int = 0) -> tuple[float, float]:
+    orbit_angle_deg = module.PLANET_0_ANGLE_DEG + planet_index * (360.0 / gearset.n_planets)
+    x = math.cos(math.radians(orbit_angle_deg)) * gearset.orbit_r
+    y = math.sin(math.radians(orbit_angle_deg)) * gearset.orbit_r
+    return x, y
 
 
 def transform_pair(module, gearset, sun_phase_deg: float, planet_phase_deg: float, ring_phase_deg: float):
@@ -79,61 +83,15 @@ def transform_pair(module, gearset, sun_phase_deg: float, planet_phase_deg: floa
     ring = module.rotate_xy(gearset.ring.gear_points(), math.radians(ring_phase_deg))
 
     planet = module.rotate_xy(gearset.planet.gear_points(), math.radians(planet_phase_deg))
-    planet = module.translate_xy(planet, gearset.orbit_r, 0.0)
-    planet = module.rotate_xy(planet, math.radians(module.PLANET_0_ANGLE_DEG))
+    x, y = planet_center(module, gearset, planet_index=0)
+    planet = module.translate_xy(planet, x, y)
     return sun[:, :2], planet[:, :2], ring[:, :2]
-
-
-def search_pair_offsets(module, gearset):
-    sun_span_deg = 360.0 / gearset.sun.z
-    planet_span_deg = 360.0 / gearset.planet.z
-    ring_span_deg = 360.0 / gearset.ring.z
-
-    best_sp = None
-    for sun_deg in np.linspace(0.0, sun_span_deg, 13):
-        for planet_deg in np.linspace(0.0, planet_span_deg, 19):
-            sun_xy, planet_xy, _ = transform_pair(module, gearset, float(sun_deg), float(planet_deg), 0.0)
-            metrics = poly_metrics(sun_xy, planet_xy)
-            score = (metrics.overlap_area_mm2, abs(metrics.min_gap_mm - module.CLEARANCE_MM))
-            if best_sp is None or score < best_sp["score"]:
-                best_sp = {
-                    "score": score,
-                    "sun_deg": float(sun_deg),
-                    "planet_deg": float(planet_deg),
-                    "metrics": metrics,
-                }
-
-    best_pr = None
-    for ring_deg in np.linspace(0.0, ring_span_deg, 13):
-        sun_xy, planet_xy, ring_xy = transform_pair(
-            module,
-            gearset,
-            best_sp["sun_deg"],
-            best_sp["planet_deg"],
-            float(ring_deg),
-        )
-        metrics = poly_metrics(planet_xy, ring_xy)
-        score = (metrics.overlap_area_mm2, abs(metrics.min_gap_mm - module.CLEARANCE_MM))
-        if best_pr is None or score < best_pr["score"]:
-            best_pr = {
-                "score": score,
-                "ring_deg": float(ring_deg),
-                "metrics": metrics,
-            }
-
-    return best_sp, best_pr
 
 
 def current_metrics(module, gearset):
     sun_deg, planet_deg, ring_deg = module.static_phase_offsets_deg(gearset)
     sun_xy, planet_xy, ring_xy = transform_pair(module, gearset, sun_deg, planet_deg, ring_deg)
-    return (
-        PairMetrics(*poly_metrics(sun_xy, planet_xy).__dict__.values()),
-        PairMetrics(*poly_metrics(planet_xy, ring_xy).__dict__.values()),
-        sun_deg,
-        planet_deg,
-        ring_deg,
-    )
+    return pair_metrics(sun_xy, planet_xy), pair_metrics(planet_xy, ring_xy), sun_deg, planet_deg, ring_deg
 
 
 def build_report() -> str:
@@ -141,7 +99,6 @@ def build_report() -> str:
     gearset = module.make_gearset()
 
     current_sp, current_pr, sun_deg, planet_deg, ring_deg = current_metrics(module, gearset)
-    best_sp, best_pr = search_pair_offsets(module, gearset)
 
     lines = [
         "# 2026-04-17 Involute Mesh Audit",
@@ -153,27 +110,20 @@ def build_report() -> str:
         f"- Module: `{gearset.sun.m:.4f} mm`",
         f"- Current static phases (deg): sun `{sun_deg:.4f}`, planet `{planet_deg:.4f}`, ring `{ring_deg:.4f}`",
         "",
-        "## Current Pair Metrics",
+        "## Current Static Pair Metrics",
         "",
-        f"- Sun-planet overlap area estimate: `{current_sp.overlap_area_mm2:.4f} mm^2`",
-        f"- Sun-planet min boundary gap estimate: `{current_sp.min_gap_mm:.4f} mm`",
-        f"- Planet-ring overlap area estimate: `{current_pr.overlap_area_mm2:.4f} mm^2`",
-        f"- Planet-ring min boundary gap estimate: `{current_pr.min_gap_mm:.4f} mm`",
-        "",
-        "## Best Offsets From 2D Search",
-        "",
-        f"- Sun-planet best phase pair (deg): sun `{best_sp['sun_deg']:.4f}`, planet `{best_sp['planet_deg']:.4f}`",
-        f"- Sun-planet best overlap area estimate: `{best_sp['metrics'].overlap_area_mm2:.4f} mm^2`",
-        f"- Sun-planet best min gap estimate: `{best_sp['metrics'].min_gap_mm:.4f} mm`",
-        f"- Planet-ring best ring phase (deg): ring `{best_pr['ring_deg']:.4f}`",
-        f"- Planet-ring best overlap area estimate: `{best_pr['metrics'].overlap_area_mm2:.4f} mm^2`",
-        f"- Planet-ring best min gap estimate: `{best_pr['metrics'].min_gap_mm:.4f} mm`",
+        f"- Sun-planet sampled overlap count: `{current_sp.overlap_count}`",
+        f"- Sun-planet min sampled boundary gap: `{current_sp.min_gap_mm:.4f} mm`",
+        f"- Planet-ring sampled overlap count: `{current_pr.overlap_count}` (not reliable for internal-ring inside/outside classification)",
+        f"- Planet-ring min sampled boundary gap: `{current_pr.min_gap_mm:.4f} mm`",
         "",
         "## Notes",
         "",
-        "- This is a sampled 2D audit, not an analytic gear solver.",
-        "- It is still useful for catching obvious indexing errors and static overlap before printing.",
-        "- If overlap area is near zero and boundary gap is small positive, the static mesh is at least numerically plausible.",
+        "- This audit follows the same static body placement as the STEP assembly export.",
+        "- It is a sampled-outline screen, not a full analytic tooth-contact solver.",
+        "- It is intended to catch obvious indexing mistakes quickly before export or print.",
+        "- The expensive phase sweep was removed because it was too slow to be useful in this workflow.",
+        "- For the internal ring pair, use the sampled minimum gap and direct solid-intersection checks, not the overlap count alone.",
     ]
     return "\n".join(lines) + "\n"
 

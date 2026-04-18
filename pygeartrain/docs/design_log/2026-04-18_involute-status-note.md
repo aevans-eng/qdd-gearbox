@@ -17,7 +17,14 @@
 - The current packaging-matched involute baseline is `R72 / P27 / S18` at `20 deg`.
 - The assembly export path is `pygeartrain/generate_step_aaron_cq_gears.py`.
 - The current assembly STEP export is intended to come out already positioned correctly in one export step.
-- Static phasing is still the active technical risk. A CadQuery solid-intersection check showed zero solid overlap for the current manual phase values, but the preview images still need a stronger sampled-outline audit before calling the mesh verified.
+- Static phasing is no longer being judged by the old preview logic alone.
+- Root cause of the apparent overlap: the old static preview path rotated each planet body with its orbit angle, while the solid STEP assembly path uses a constant planet tooth phase at each translated planet center.
+- Direct solid checks for the current static STEP placement gave zero intersection volume for sun-vs-planet and ring-vs-planet on all three planets.
+- A fast sampled-outline audit now follows the same static body placement as the STEP export path.
+- Current verified static outputs:
+  - `pygeartrain/step_output_aaron_cq_gears/spur/011/gearbox_CAD.step`
+  - `pygeartrain/step_output_aaron_cq_gears/spur/011/mesh_preview_contact.png`
+  - `pygeartrain/docs/design_log/2026-04-17_involute-mesh-audit.md`
 
 ## Important Dependency Note
 
