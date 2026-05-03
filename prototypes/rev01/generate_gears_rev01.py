@@ -148,9 +148,11 @@ validate_planetary_config(R_teeth, P_teeth, S_teeth, N_planets)
 # Negative values shrink the external gears and enlarge the ring profile.
 # Export only the next-print set by default to keep the output folder clean.
 CLEARANCE_VARIANTS = [
-    ("actual_print_0p13_total_clearance", -0.065),  # 0.13 mm total mesh clearance
+    ("actual_print_0p13_total_clearance_bottom_taper_0p25x1p0", -0.065),  # 0.13 mm total mesh clearance
 ]
 RING_OFFSET_DEG = 0.2
+BOTTOM_TAPER_OFFSET_MM = 0.25
+BOTTOM_TAPER_HEIGHT_MM = 1.0
 
 # Ring wall thickness
 RING_WALL_MM = 15.0              # full rev01 ring wall
@@ -194,6 +196,7 @@ print()
 print(f"--- Geometry ---")
 print(f"Ring diameter: {TARGET_RING_DIAMETER_MM}mm, Thickness: {GEAR_THICKNESS_MM}mm")
 print(f"Ring outer diameter: {ring_outer_r * 2}mm (with {RING_WALL_MM}mm wall)")
+print(f"Bottom taper relief: {BOTTOM_TAPER_OFFSET_MM:.3f}mm over {BOTTOM_TAPER_HEIGHT_MM:.3f}mm")
 print(f"Ratio: {(R_teeth + S_teeth) / S_teeth:.2f}:1")
 print(f"(No screw holes -- CATIA skeleton handles fasteners)")
 
@@ -254,7 +257,16 @@ def filter_points(vertices):
 
 
 
-def create_gear_shape(profile_2d, twist_per_z, z_start, z_end, extra_rotation=0.0, translate=(0, 0)):
+def create_gear_shape(
+    profile_2d,
+    twist_per_z,
+    z_start,
+    z_end,
+    extra_rotation=0.0,
+    translate=(0, 0),
+    bottom_taper_offset_mm=0.0,
+    bottom_taper_height_mm=0.0,
+):
     """
     Create gear solid using loft between two Z levels.
     """
@@ -263,12 +275,15 @@ def create_gear_shape(profile_2d, twist_per_z, z_start, z_end, extra_rotation=0.
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Fuse
     from OCP.gp import gp_Pnt
 
-    def get_profile_at_z(z_val):
+    def get_profile_at_z(z_val, radial_offset_mm=0.0):
+        profile_for_section = profile_2d
+        if abs(radial_offset_mm) > SMALL_RADIUS_TOLERANCE:
+            profile_for_section = offset_profile_radial(profile_2d, radial_offset_mm)
         if abs(z_val) > SMALL_RADIUS_TOLERANCE:
             twist = abs(z_val) * twist_per_z + extra_rotation
         else:
             twist = 0.0
-        rotated = rotate_2d(profile_2d, twist)
+        rotated = rotate_2d(profile_for_section, twist)
         if translate != (0, 0):
             rotated = rotated.copy()
             rotated[:, 0] += translate[0]
@@ -281,6 +296,32 @@ def create_gear_shape(profile_2d, twist_per_z, z_start, z_end, extra_rotation=0.
             builder.Add(gp_Pnt(float(pt[0]), float(pt[1]), float(z)))
         builder.Close()
         return builder.Wire()
+
+    if (
+        bottom_taper_height_mm > SMALL_RADIUS_TOLERANCE
+        and abs(bottom_taper_offset_mm) > SMALL_RADIUS_TOLERANCE
+    ):
+        taper_top_z = min(z_start + bottom_taper_height_mm, z_end)
+        if taper_top_z >= z_end - SMALL_RADIUS_TOLERANCE:
+            loft = BRepOffsetAPI_ThruSections(True)
+            loft.AddWire(make_wire_from_pts(get_profile_at_z(z_start, bottom_taper_offset_mm), z_start))
+            loft.AddWire(make_wire_from_pts(get_profile_at_z(z_end, 0.0), z_end))
+            loft.Build()
+            return loft.Shape()
+
+        bottom_loft = BRepOffsetAPI_ThruSections(True)
+        bottom_loft.AddWire(make_wire_from_pts(get_profile_at_z(z_start, bottom_taper_offset_mm), z_start))
+        bottom_loft.AddWire(make_wire_from_pts(get_profile_at_z(taper_top_z, 0.0), taper_top_z))
+        bottom_loft.Build()
+
+        upper_loft = BRepOffsetAPI_ThruSections(True)
+        upper_loft.AddWire(make_wire_from_pts(get_profile_at_z(taper_top_z, 0.0), taper_top_z))
+        upper_loft.AddWire(make_wire_from_pts(get_profile_at_z(z_end, 0.0), z_end))
+        upper_loft.Build()
+
+        fuse = BRepAlgoAPI_Fuse(bottom_loft.Shape(), upper_loft.Shape())
+        fuse.Build()
+        return fuse.Shape()
 
     # For herringbone, if spanning z=0, we need 3 profiles
     if z_start < 0 and z_end > 0:
@@ -323,7 +364,15 @@ def create_gear_shape(profile_2d, twist_per_z, z_start, z_end, extra_rotation=0.
         return loft.Shape()
 
 
-def create_ring_half(profile_2d, twist_per_z, z_start, z_end, extra_rotation):
+def create_ring_half(
+    profile_2d,
+    twist_per_z,
+    z_start,
+    z_end,
+    extra_rotation,
+    bottom_taper_offset_mm=0.0,
+    bottom_taper_height_mm=0.0,
+):
     """
     Create one half of the ring gear (tooth geometry only, no fastener holes).
     Fastener features are handled in CATIA via skeleton-driven design.
@@ -343,7 +392,15 @@ def create_ring_half(profile_2d, twist_per_z, z_start, z_end, extra_rotation):
     ).Shape()
 
     # Create internal gear profile shape
-    gear_shape = create_gear_shape(profile_2d, twist_per_z, z_start, z_end, extra_rotation)
+    gear_shape = create_gear_shape(
+        profile_2d,
+        twist_per_z,
+        z_start,
+        z_end,
+        extra_rotation,
+        bottom_taper_offset_mm=bottom_taper_offset_mm,
+        bottom_taper_height_mm=bottom_taper_height_mm,
+    )
 
     # Cut internal teeth from cylinder
     ring_half = BRepAlgoAPI_Cut(cylinder, gear_shape)
@@ -372,7 +429,14 @@ def generate_variant(variant_name, profile_offset_mm):
     sun_offset = offset_profile_radial(sun_scaled, profile_offset_mm)
     sun_filtered = filter_points(sun_offset)
 
-    sun_shape = create_gear_shape(sun_filtered, sun_twist_per_z, -z_half, z_half)
+    sun_shape = create_gear_shape(
+        sun_filtered,
+        sun_twist_per_z,
+        -z_half,
+        z_half,
+        bottom_taper_offset_mm=-BOTTOM_TAPER_OFFSET_MM,
+        bottom_taper_height_mm=BOTTOM_TAPER_HEIGHT_MM,
+    )
     sun_cq = cq.Workplane("XY").add(cq.Shape(sun_shape))
     exporters.export(sun_cq, os.path.join(step_parts_dir, "sun_PRINT.step"))
     exporters.export(sun_cq, os.path.join(stl_parts_dir, "sun_PRINT.stl"))
@@ -390,7 +454,12 @@ def generate_variant(variant_name, profile_offset_mm):
     planet_filtered = filter_points(planet_rotated)
 
     planet_shape = create_gear_shape(
-        planet_filtered, planet_twist_per_z, -z_half, z_half
+        planet_filtered,
+        planet_twist_per_z,
+        -z_half,
+        z_half,
+        bottom_taper_offset_mm=-BOTTOM_TAPER_OFFSET_MM,
+        bottom_taper_height_mm=BOTTOM_TAPER_HEIGHT_MM,
     )
 
     planet_cq = cq.Workplane("XY").add(cq.Shape(planet_shape))
@@ -409,7 +478,9 @@ def generate_variant(variant_name, profile_offset_mm):
         pos_y = carrier_radius * math.sin(a)
         planet_shape_i = create_gear_shape(
             planet_filtered_i, planet_twist_per_z, -z_half, z_half,
-            translate=(pos_x, pos_y)
+            translate=(pos_x, pos_y),
+            bottom_taper_offset_mm=-BOTTOM_TAPER_OFFSET_MM,
+            bottom_taper_height_mm=BOTTOM_TAPER_HEIGHT_MM,
         )
         planet_shapes_for_assembly.append(planet_shape_i)
         planet_cqs_for_assembly.append((f"planet_{i}_PRINT", cq.Workplane("XY").add(cq.Shape(planet_shape_i))))
@@ -427,7 +498,9 @@ def generate_variant(variant_name, profile_offset_mm):
         ring_shape = create_ring_half(
             ring_filtered, ring_twist_per_z,
             -z_half, z_half,
-            ring_comp_rad
+            ring_comp_rad,
+            bottom_taper_offset_mm=BOTTOM_TAPER_OFFSET_MM,
+            bottom_taper_height_mm=BOTTOM_TAPER_HEIGHT_MM,
         )
         ring_cq = cq.Workplane("XY").add(cq.Shape(ring_shape))
         exporters.export(ring_cq, os.path.join(step_parts_dir, "ring_PRINT.step"))
