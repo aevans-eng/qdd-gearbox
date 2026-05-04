@@ -288,6 +288,33 @@ Example for an AS5047 SPI encoder path:
   --spin-duration 3
 ```
 
+## Known Limit — Bare Motor on Hammer Trainer (2026-05-03)
+
+The bare D6374 cannot drive the Hammer trainer's loaded direction at this controller's effective `~70 A` Iq cap. Confirmed by a 150 s pinned-current run: motor delivered the full commanded `2.8 Nm`, encoder velocity stayed at `0`, motor heated `+9 °C`, and `232 W` of input power dissipated entirely as heat. Iq saturated at the cap throughout.
+
+Practical implications when bringing up bare-motor again:
+
+- **Direction asymmetry is real.** Negative motor velocity = freewheel direction (low load, easy to drive at small currents — confirmed working in session 006). Positive = loaded direction (cannot be driven bare-motor without one of the workarounds below).
+- **Do not pin Iq at the cap in the loaded direction for more than ~30 s without rotation.** It's a pure-resistive heater at that point. Motor and FET will rise toward thermal abort.
+- **For matched-load (Hammer-recording) bare-motor data, choose one:**
+  - hand-spin the wheel during the run to break stiction; motor maintains at lower steady-state torque
+  - try a higher-current burst (`100–120 A` peak, `≤ 10 s`, strict thermal abort) if you accept the windings stress
+  - change methodology — characterize bare motor in freewheel direction at low load, gearbox-installed in loaded direction; infer gearbox-only efficiency from motor losses
+
+The 5:1 gearbox exists *because* the bare motor doesn't have enough torque to drive these loads. See [`testing/data/session-008-bare-baseline-handoff.md`](../data/session-008-bare-baseline-handoff.md) for the full diagnosis.
+
+## Recovery From Sticky Axis Errors
+
+The synced harness (`safe_ramp_test.py`, `safe_torque_ramp_test.py`) now does:
+
+1. Disable watchdog → `odrv.clear_errors()` → per-target `error = 0` → print post-clear state.
+2. Re-enable watchdog → immediately `watchdog_feed()` → `clear_errors()` again → transition to `CLOSED_LOOP`.
+3. Inside the run loop, check `current_state` each tick; if it drops out of `CLOSED_LOOP`, print `disarm_reason` + `active_errors` + per-subobject errors and abort cleanly.
+
+This handles the sticky-error chain seen during 2026-05-03 (bits `2048` WATCHDOG_TIMER_EXPIRED, `48`, `16`).
+
+If the script still prints `FAILED to enter closed loop` and the post-clear printout shows nonzero axis error: **power-cycle the PSU** (off, count to 5, on). Software clear cannot reset some sticky bits without a controller power cycle.
+
 ## Immediate Unknowns To Close
 
 - Do you already have the Makerbase-compatible AS5047 board and magnet, or are you using another encoder?
