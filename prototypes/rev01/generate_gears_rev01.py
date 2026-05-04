@@ -155,11 +155,10 @@ TOP_TAPER_OFFSET_MM = 0.25
 TOP_TAPER_HEIGHT_MM = 1.0
 
 SUN_TEST_VARIANTS = [
-    "sun_test_top_taper_0p25x1p0_square_pocket_9p6x11_chamfer_0p5",
+    "sun_test_bottom_taper_0p25x1p0_square_pocket_9p6x11_no_chamfer",
 ]
 SUN_TEST_SQUARE_POCKET_MM = 9.6
 SUN_TEST_POCKET_DEPTH_MM = 11.0
-SUN_TEST_POCKET_CHAMFER_MM = 0.5
 
 # Ring wall thickness
 RING_WALL_MM = 15.0              # full rev01 ring wall
@@ -271,6 +270,8 @@ def create_gear_shape(
     z_end,
     extra_rotation=0.0,
     translate=(0, 0),
+    bottom_taper_offset_mm=0.0,
+    bottom_taper_height_mm=0.0,
     top_taper_offset_mm=0.0,
     top_taper_height_mm=0.0,
 ):
@@ -303,6 +304,32 @@ def create_gear_shape(
             builder.Add(gp_Pnt(float(pt[0]), float(pt[1]), float(z)))
         builder.Close()
         return builder.Wire()
+
+    if (
+        bottom_taper_height_mm > SMALL_RADIUS_TOLERANCE
+        and abs(bottom_taper_offset_mm) > SMALL_RADIUS_TOLERANCE
+    ):
+        taper_top_z = min(z_start + bottom_taper_height_mm, z_end)
+        if taper_top_z >= z_end - SMALL_RADIUS_TOLERANCE:
+            loft = BRepOffsetAPI_ThruSections(True)
+            loft.AddWire(make_wire_from_pts(get_profile_at_z(z_start, bottom_taper_offset_mm), z_start))
+            loft.AddWire(make_wire_from_pts(get_profile_at_z(z_end, 0.0), z_end))
+            loft.Build()
+            return loft.Shape()
+
+        bottom_loft = BRepOffsetAPI_ThruSections(True)
+        bottom_loft.AddWire(make_wire_from_pts(get_profile_at_z(z_start, bottom_taper_offset_mm), z_start))
+        bottom_loft.AddWire(make_wire_from_pts(get_profile_at_z(taper_top_z, 0.0), taper_top_z))
+        bottom_loft.Build()
+
+        upper_loft = BRepOffsetAPI_ThruSections(True)
+        upper_loft.AddWire(make_wire_from_pts(get_profile_at_z(taper_top_z, 0.0), taper_top_z))
+        upper_loft.AddWire(make_wire_from_pts(get_profile_at_z(z_end, 0.0), z_end))
+        upper_loft.Build()
+
+        fuse = BRepAlgoAPI_Fuse(bottom_loft.Shape(), upper_loft.Shape())
+        fuse.Build()
+        return fuse.Shape()
 
     if (
         top_taper_height_mm > SMALL_RADIUS_TOLERANCE
@@ -432,17 +459,14 @@ def make_square_wire(side_mm, z):
     return builder.Wire()
 
 
-def create_square_pocket_cutter(top_z, side_mm, depth_mm, chamfer_mm):
+def create_square_pocket_cutter(top_z, side_mm, depth_mm):
     from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
 
     cutter_extension_mm = 0.2
-    top_opening_side_mm = side_mm + 2.0 * chamfer_mm
-    straight_start_z = top_z - chamfer_mm
     bottom_z = top_z - depth_mm
 
     loft = BRepOffsetAPI_ThruSections(True)
-    loft.AddWire(make_square_wire(top_opening_side_mm, top_z + cutter_extension_mm))
-    loft.AddWire(make_square_wire(side_mm, straight_start_z))
+    loft.AddWire(make_square_wire(side_mm, top_z + cutter_extension_mm))
     loft.AddWire(make_square_wire(side_mm, bottom_z))
     loft.Build()
     return loft.Shape()
@@ -456,7 +480,6 @@ def cut_sun_square_pocket(sun_shape):
         top_z,
         SUN_TEST_SQUARE_POCKET_MM,
         SUN_TEST_POCKET_DEPTH_MM,
-        SUN_TEST_POCKET_CHAMFER_MM,
     )
     cut = BRepAlgoAPI_Cut(sun_shape, cutter)
     cut.Build()
@@ -625,8 +648,7 @@ def generate_sun_test_variant(variant_name, profile_offset_mm):
     print(
         "Square pocket: "
         f"{SUN_TEST_SQUARE_POCKET_MM:.3f} mm x {SUN_TEST_SQUARE_POCKET_MM:.3f} mm, "
-        f"{SUN_TEST_POCKET_DEPTH_MM:.3f} mm deep, "
-        f"{SUN_TEST_POCKET_CHAMFER_MM:.3f} mm internal top chamfer"
+        f"{SUN_TEST_POCKET_DEPTH_MM:.3f} mm deep, no chamfer"
     )
     print("=" * 60)
 
@@ -640,8 +662,8 @@ def generate_sun_test_variant(variant_name, profile_offset_mm):
         sun_twist_per_z,
         -z_half,
         z_half,
-        top_taper_offset_mm=-TOP_TAPER_OFFSET_MM,
-        top_taper_height_mm=TOP_TAPER_HEIGHT_MM,
+        bottom_taper_offset_mm=-TOP_TAPER_OFFSET_MM,
+        bottom_taper_height_mm=TOP_TAPER_HEIGHT_MM,
     )
     sun_with_pocket_shape = cut_sun_square_pocket(sun_shape)
     sun_cq = cq.Workplane("XY").add(cq.Shape(sun_with_pocket_shape))
