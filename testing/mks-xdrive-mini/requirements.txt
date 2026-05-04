@@ -1,0 +1,4 @@
+odrive==0.5.1.post0
+libusb-package>=1.0.26
+bleak>=3.0.1
+matplotlib>=3.10.0

@@ -30,6 +30,15 @@ tools/*.exe     # Compiled utilities (regenerate locally)
 *.tar.gz
 *.zip
 
+# QDD test run outputs (keep tooling and handoff notes, not raw bench logs)
+testing/data/synced-*/
+testing/data/scratch/
+testing/data/*.csv
+testing/data/*.log
+testing/data/*.png
+testing/dyno/ble-capture/runs/*.csv
+testing/dyno/ble-capture/runs/*.png
+
 # Keep _versions/ snapshots tracked (override above)
 !pygeartrain/step_output_aaron/_versions/
 docs/_archive/hackathon-day-p1/
