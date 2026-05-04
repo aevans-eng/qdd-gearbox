@@ -1,95 +1,120 @@
 # QDD Gearbox
 
-A quasi-direct-drive actuator built around a D6374-150KV BLDC motor, 5:1 3D-printed planetary gearbox, and ODrive v3.6 controller. Designed for backdrivability and impedance control.
+A quasi-direct-drive actuator built around a D6374-150KV BLDC motor, a 5:1 3D-printed planetary gearbox, and an MKS xDrive Mini ODrive-compatible controller. Designed for backdrivability and impedance-control experiments. Total build cost under $120 CAD.
 
-![Learning System](testing/learn/learning-system-diagram.png)
+This is a personal engineering project tracked end-to-end with a real V&V framework: requirements, traceability matrix, test plans, and a documented test campaign. The goal is to learn actuator design from the physics up — and to produce something interview-grade for actuator-engineering roles.
 
-## What this is
+## Status
 
-I'm designing a QDD actuator as a hands-on vehicle for learning actuator design, controls, and testing methodology. The project covers the full stack: mechanical design in CATIA, Python calculators for gear geometry and thermal analysis, a structured test campaign, and a conversational learning system that ties it all together.
+**Rev 00B printed, assembled, and partially validated.**
 
-The gearbox is 3D printed in PLA on a consumer FDM printer. Total budget is under $120 CAD. It's not trying to compete with commercial actuators; it's trying to teach me how they work from the physics up.
+| Test | Requirement | Status |
+|---|---|---|
+| T-012 backlash | R-01 | **Pass** — 0° measured |
+| T-013 backdrivability | R-04 | Pending hockey-stick adapter |
+| BOM weight | R-10 | Pending inspection |
+| BOM cost | R-02 | Pending sum |
+| T-020 peak torque | R-06 | Pending dyno day |
+| T-021 continuous torque | R-07 | Pending dyno day |
+| T-022 efficiency | R-09 | Pending — bare-motor baseline blocked, see [`testing/OFFICIAL-DYNO-TESTING.md`](testing/OFFICIAL-DYNO-TESTING.md) |
+| T-023 speed | R-11 | Pending dyno day |
+| T-024 thermal | R-08 | Pending dyno day |
+| Health check (pre/post dyno) | R-05 | Pending |
 
-## Project structure
-
-```
-calc/           Python design calculators (gear geometry, tooth stress, bearing life, thermal)
-docs/           Design docs, specs, original trade studies
-  specs/        Design specs and implementation plans
-  design/       Tolerances, assembly profile, gear parameters
-  catia/        CATIA workflows and skeleton modeling guide
-drawings/       GD&T annotation notes
-prototypes/     Organized by revision (rev00a, rev00b)
-testing/        Test campaign, test bench design, learning system
-  learn/        Learning system v2 (workbooks, progress tracking, reference cards)
-src/            Future firmware and ODrive config
-ui/             Tkinter dashboard for calc results
-```
-
-## The learning system
-
-The test campaign needs me to actually understand motor physics, not just run procedures. So I built a learning system around that.
-
-It's a Claude Code skill (`/learn`) that runs a 6-step workflow per topic:
-
-1. **Diagnose** - Concept-check questions to map where the gaps are
-2. **Learn** - Interactive lesson targeting those gaps. Traces cause-effect chains using my actual hardware values, not abstract theory.
-3. **Distill** - I explain back what I learned. Claude writes it into a reference card in my words.
-4. **Practice** - Applied problems and design judgment questions from the workbook, graded immediately
-5. **Grade** - Summary of performance, live probing on weak spots
-6. **Drill** - Tesla interview simulation. Rapid-fire first-principles questions until I break, then teach the gap.
-
-13 topics covering motor fundamentals through FEA literacy. Everything happens in one conversation; no switching between editors and terminals.
-
-### Gamification
-
-Progress tracked in `testing/learn/progress.json`. Streak counter, visual dashboard, and real-world unlocks gated by actual knowledge:
-
-| Topics completed | What it unlocks |
-|-----------------|----------------|
-| 01-02 | Update resume with motor characterization |
-| 01-05 | Start the test campaign |
-| 01-07 | LinkedIn post about testing methodology |
-| 01-09 | Message Tesla contacts about impedance control |
-| All 13 | Interview-ready |
-
-Evening nudge notification via Windows Task Scheduler if no study activity logged that day.
-
-### Teaching method
-
-The lesson step (step 2) follows a specific chain:
-
-**Anchor** - Connect each concept to something physical I've touched. My motor, my gearbox, my ODrive.
-
-**Trace** - Walk the mechanism link by link. "Current flows through stator windings. What does that create?" I answer, Claude confirms or corrects, we move to the next link.
-
-**Numbers** - Plug in my actual hardware values. $K_t = 0.0551$ Nm/A, 5:1 ratio, 90% efficiency. Real answers I can sanity-check against what I've measured.
-
-**Predict** - "What if we used a 300KV motor instead?" I reason through it before getting the answer. Wrong predictions reveal where the mental model breaks.
-
-### Running it
-
-```
-# In Claude Code, from the qdd-gearbox directory
-/learn
-```
-
-Shows a dashboard with progress, streak, and next mission. Type "let's go" to start.
+Active blocker: bare-motor matched-load baseline against the trainer's loaded direction is torque-limited bare-motor. See [session-008 handoff](testing/data/session-008-bare-baseline-handoff.md) for the diagnosis and three options to unblock R-09.
 
 ## Hardware
 
 | Component | Spec |
-|-----------|------|
-| Motor | D6374-150KV ($K_t = 0.0551$ Nm/A, 7 pole pairs) |
-| Controller | ODrive v3.6 (8 kHz FOC) |
-| Gearbox | 5:1 planetary, 3D printed PLA |
-| Supply | 24V nominal |
-| Encoder | Magnetic (integrated with ODrive) |
+|---|---|
+| Motor | D6374-150KV BLDC (7 pole pairs) |
+| Torque constant | 0.04 Nm/A (conservative — used for all requirement math; nominal 0.0551 Nm/A documented but not yet re-validated) |
+| Controller | MKS xDrive Mini (ODrive-compatible firmware), 8 kHz FOC |
+| Gearbox | 5:1 planetary, 3D printed PLA, custom design |
+| Supply | 24 V nominal, 10 A current limit, OVP 30 V, OCP 10 A |
+| Encoder | Magnetic (integrated with controller) |
+| Dyno | Saris H2 / Hammer trainer (BLE power + rpm) |
+| Thermal monitoring | Arduino + thermistor on motor body, FET temp from controller |
 
-## Status
+Direction note: positive motor velocity drives the trainer's *loaded* (resistance-engaged) direction. Negative is freewheel. The bare motor at this controller's effective ~70 A Iq cap (≈ 2.8 Nm) cannot break the trainer's loaded-direction static drag — that's why the gearbox exists.
 
-Rev 00B printed and assembled. Learning system built and ready to use. Test campaign starts after topics 01-05 are complete.
+## How the Test System Works
+
+The dyno runs are *synchronized*: motor controller, BLE dyno, and Arduino temperature logger all start within a second of each other and run for a fixed capture window. Output is one timestamped folder per run with:
+
+- `motor.log` — controller telemetry (vbus, ibus, dc_W, Iq, encoder velocity, FET temp, phase currents)
+- `dyno.csv` — Hammer rpm/power/torque from BLE
+- `temperature.csv` — Arduino motor-body thermistor
+- `manifest.json` — run metadata, parameters, summary stats, exit codes
+
+Run a synced test:
+
+```powershell
+cd testing
+.\run_official_requirement_test.ps1 -TestStage PreflightDirection
+.\run_official_requirement_test.ps1 -TestStage BareBaseline -Series
+.\run_official_requirement_test.ps1 -TestStage GearboxEfficiency -Series
+```
+
+See [`testing/OFFICIAL-DYNO-TESTING.md`](testing/OFFICIAL-DYNO-TESTING.md) for the full sequence, safety defaults, recovery procedures, and the bare-motor torque-limit constraint.
+
+Compare a bare run against a gearbox-installed run:
+
+```powershell
+& C:\Users\aaron\miniconda3\python.exe .\analyze_synced_efficiency.py `
+  --bare-run    .\data\synced-official-bare-baseline-40a-YYYYMMDD-HHMMSS `
+  --gearbox-run .\data\synced-official-gearbox-efficiency-40a-YYYYMMDD-HHMMSS `
+  --rpm-tolerance 3
+```
+
+## V&V Framework
+
+11 requirements drive 7 tests + 3 inspections:
+
+- **Source of truth:** [`testing/qdd-rtm.xlsx`](testing/qdd-rtm.xlsx) — full requirements traceability matrix.
+- **Test log:** [`testing/validation/test-log.md`](testing/validation/test-log.md) — every test entry with date, config, result, anomalies.
+- **Test plans:** [`testing/validation/`](testing/validation/) — per-test procedures, acceptance criteria.
+- **Methodology:** test plan was redesigned around a V-model approach in March 2026.
+
+Every test session also gets a journal entry in [`testing/data/session-log.md`](testing/data/session-log.md) and, for major sessions, a handoff doc (`session-NNN-*-handoff.md`) capturing what worked, what didn't, and what the next session needs to know.
+
+## Repo Structure
+
+```
+calc/                 Python design calculators (gear geometry, tooth stress, bearing life, thermal)
+docs/
+  design/             Tolerances, assembly profile, gear parameters
+  catia/              CATIA modeling guide and skeleton workflow
+  log/                Session work logs
+drawings/             GD&T annotation notes
+prototypes/
+  rev00a/             First print — superseded
+  rev00b/             Current revision (assembled, partial validation passed)
+testing/
+  OFFICIAL-DYNO-TESTING.md     Operating procedures for the dyno campaign
+  qdd-rtm.xlsx                 Requirements traceability matrix
+  run_official_requirement_test.ps1   Wrapper for each requirement test stage
+  run_synced_motor_dyno_temp.ps1      Underlying synced-capture orchestrator
+  analyze_synced_efficiency.py        Match bare vs gearbox runs at common rpm windows
+  plot_synced_run.py                  Per-run timeseries plots
+  mks-xdrive-mini/                    Controller-side scripts and session checklist
+  temperature-logger/                 Arduino + Python thermistor logger
+  dyno/ble-capture/                   BLE Hammer capture
+  validation/                         Per-test plans, test log, methodology docs
+  hardware/                           Safety checklist, SOP, mounting notes
+  data/                               Run folders + session-log.md + handoff docs
+  future-work.md                      Characterization and controls ideas
+STATE.md              Current project state — start here for any new session
+CLAUDE.md             Project rules and conventions
+```
+
+## Active Files to Read First
+
+- **[STATE.md](STATE.md)** — current status, remaining tests, file map, blockers.
+- **[testing/data/session-008-bare-baseline-handoff.md](testing/data/session-008-bare-baseline-handoff.md)** — most recent test session, harness bug fixes, R-09 unblock options.
+- **[testing/OFFICIAL-DYNO-TESTING.md](testing/OFFICIAL-DYNO-TESTING.md)** — dyno operating procedures.
+- **[testing/qdd-rtm.xlsx](testing/qdd-rtm.xlsx)** — requirements ↔ tests matrix.
 
 ## License
 
-This is a personal learning project. Not intended for redistribution.
+Personal learning project. Not intended for redistribution.

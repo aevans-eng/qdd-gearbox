@@ -74,11 +74,26 @@ def main() -> int:
 
     ax.requested_state = AXIS_STATE_IDLE
     time.sleep(0.3)
+    try:
+        ax.config.enable_watchdog = False
+    except Exception:
+        pass
+    time.sleep(0.1)
+    try:
+        odrv.clear_errors()
+    except Exception:
+        pass
     for tgt in (ax, ax.motor, ax.encoder, ax.controller):
         try:
             tgt.error = 0
         except Exception:
             pass
+    time.sleep(0.2)
+    print(
+        f"  after clear: err axis={ax.error} motor={ax.motor.error} "
+        f"enc={ax.encoder.error} ctrl={ax.controller.error}",
+        flush=True,
+    )
 
     ax.motor.config.current_lim = a.current_limit
     ax.controller.config.control_mode = CONTROL_MODE_TORQUE_CONTROL
@@ -86,6 +101,19 @@ def main() -> int:
     ax.controller.input_torque = 0.0
     ax.config.watchdog_timeout = a.watchdog_timeout
     ax.config.enable_watchdog = True
+    try:
+        ax.watchdog_feed()
+    except Exception:
+        pass
+    try:
+        odrv.clear_errors()
+    except Exception:
+        pass
+    for tgt in (ax, ax.motor, ax.encoder, ax.controller):
+        try:
+            tgt.error = 0
+        except Exception:
+            pass
 
     ax.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
     time.sleep(0.3)
@@ -144,6 +172,20 @@ def main() -> int:
                 ax.watchdog_feed()
             except Exception:
                 pass
+            state_now = safe_get(ax, "current_state", -1)
+            if state_now != AXIS_STATE_CLOSED_LOOP_CONTROL:
+                disarm_reason = safe_get(ax, "disarm_reason", "?")
+                active_errors = safe_get(ax, "active_errors", "?")
+                print(
+                    f"  -> axis dropped out of CLOSED_LOOP at t={t:.2f}s "
+                    f"(state={state_now}, disarm_reason={disarm_reason}, "
+                    f"active_errors={active_errors}, "
+                    f"axis_err={ax.error}, motor_err={ax.motor.error}, "
+                    f"enc_err={ax.encoder.error}, ctrl_err={ax.controller.error}); "
+                    f"aborting",
+                    flush=True,
+                )
+                break
             vel = ax.encoder.vel_estimate
             iq = ax.motor.current_control.Iq_measured
             cc_ibus = safe_get(ax.motor.current_control, "Ibus")

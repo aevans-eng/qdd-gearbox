@@ -122,18 +122,18 @@ function Write-Manifest($status, $extra = @{}) {
 
     $json = $manifest | ConvertTo-Json -Depth 8
     $written = $false
-    for ($attempt = 1; $attempt -le 5; $attempt++) {
+    for ($attempt = 1; $attempt -le 20; $attempt++) {
         try {
             Set-Content -LiteralPath $manifestPath -Value $json -Encoding UTF8
             $written = $true
             break
         }
         catch {
-            if ($attempt -eq 5) {
-                throw
-            }
-            Start-Sleep -Milliseconds (150 * $attempt)
+            Start-Sleep -Milliseconds 500
         }
+    }
+    if (-not $written) {
+        Write-Warning "Manifest write to $manifestPath failed after 20 retries; continuing without manifest update."
     }
 }
 

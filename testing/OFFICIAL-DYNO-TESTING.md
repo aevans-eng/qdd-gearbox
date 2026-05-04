@@ -76,11 +76,18 @@ Use this first after any wiring/controller reboot. It uses a tiny positive torqu
 
 ## Direction Notes From 2026-05-03
 
-Do not use negative velocity for official efficiency data in the current bare-motor setup. It oversped in the freewheel direction and tripped current limit.
+Two hard constraints established this date:
 
-Positive torque loads the trainer, but `20 A` and `40 A` torque-ramp attempts did not spin the Hammer enough to produce nonzero dyno power. The next efficiency attempt should find a positive-direction speed/load point that gets the Hammer above its reliable reporting speed.
+1. **Negative-velocity at high targets oversped to ~+27 t/s** in the freewheel direction and tripped current limit (session 007, target -1.67 t/s @ 20 A). Do not use targets ≤ -1 t/s for official runs.
+2. **Positive (loaded) direction cannot be driven bare-motor at this controller's ~70 A Iq cap** (≈ 2.8 Nm motor torque, session 008). Multiple runs at 20 A, 40 A, 60 A, 70 A torque mode and 20 A, 60 A, 90 A velocity mode → motor stalled in the loaded direction. After 150 s pinned at 70 A Iq, motor heated +9 °C, all 232 W dissipated as heat, no rotation. **The 5:1 gearbox exists because the bare motor cannot drive these loads directly — this is consistent with the design rationale.**
 
-Target speed guidance:
+For a matched-load (Hammer-recording) bare-motor baseline, three options remain:
+
+- **Hand-spin start.** Apply ~2.8 Nm at 70 A, hand-spin the wheel during the hold to break stiction, motor maintains at lower steady-state torque. Hacky but produces matched-load data.
+- **Higher current burst.** Try 100–120 A peak for ≤ 10 s with strict thermal abort. Risk: FET thermal trip, motor windings stress.
+- **Change methodology for R-09.** Characterize bare motor in freewheel direction at low load (motor input W vs estimated motor mech W). Characterize gearbox-installed in loaded direction at trainer (full-system input W vs Hammer output W). Compute gearbox-only efficiency by inferring motor losses from the bare curve at matched motor torque/speed. Most methodologically rigorous; avoids the bare-motor torque wall entirely.
+
+Target speed guidance (if a valid bare-motor matched-load run is achieved):
 
 ```text
 Minimum useful trainer speed target: about 100 rpm
@@ -88,7 +95,16 @@ Bare direct-drive motor target: 100 rpm / 60 = 1.67 turns/s
 Gearbox-installed motor target for same trainer speed: 1.67 * 5 = 8.33 turns/s
 ```
 
-Use a gradual positive-direction ramp and strict velocity/temp aborts.
+For the gearbox-installed runs (where bare-motor torque is not the limit), use a gradual positive-direction ramp and strict velocity/temp aborts.
+
+## Recovery After a Failed Run
+
+The 2026-05-03 evening session uncovered a chain of silent-failure modes in the harness; all are now fixed in code (`safe_ramp_test.py`, `safe_torque_ramp_test.py`, `run_synced_motor_dyno_temp.ps1`). When a run still fails:
+
+1. **Read the new state-watch printout in `motor.log`** — on a silent disarm during a run, the script now prints `disarm_reason`, `active_errors`, and per-subobject error codes at the moment of disarm.
+2. **Read the post-clear printout at the start of every run.** The script prints axis/motor/encoder/controller errors after attempting to clear them. If anything is nonzero after the clear, the run will likely fail to enter CLOSED_LOOP.
+3. **If sticky errors remain after a software clear: power-cycle PSU.** Off, count to 5, on. This is the only reliable reset for some sticky bits. Sticky values seen: axis `48`, `16`, `2048`; motor `32768`.
+4. **Manifest summary `motor_exit_code` and `dyno_exit_code` are authoritative.** Nonzero = real failure even if the parent script reported "completed" status.
 
 ## Bare Motor Baseline
 
